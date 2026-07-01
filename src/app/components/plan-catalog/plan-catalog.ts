@@ -1,0 +1,45 @@
+import { Component, OnInit } from '@angular/core';
+import { PlanService } from '../../services/plan';
+import { Plan } from '../../models/plan.model';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MenuComponent } from '../../menu/menu';
+import Swal from 'sweetalert2';
+
+@Component({
+  selector: 'app-plan-catalog',
+  standalone: true,
+  imports: [CommonModule, MatCardModule, MatButtonModule, MenuComponent],
+  templateUrl: './plan-catalog.html',
+  styleUrls: ['./plan-catalog.css']
+})
+export class PlanCatalogComponent implements OnInit {
+  planes: Plan[] = [];
+
+  constructor(private planService: PlanService) { }
+
+  ngOnInit(): void {
+    this.planService.listaPlanes().subscribe(res => {
+      this.planes = res.data || [];
+    });
+  }
+
+  verDetalle(plan: Plan) {
+    Swal.fire({
+      title: `<span style="color: #2d6a4f">${plan.name}</span>`,
+      html: `
+        <div class="text-left">
+          <p><b>Costo:</b> S/ ${plan.monthlyPrice}</p>
+          <p><b>Límite:</b> ${plan.deviceLimit} dispositivos IoT</p>
+          <p><b>Ciclo:</b> ${plan.billingCycle}</p>
+          <hr>
+          <p>${plan.description}</p>
+        </div>
+      `,
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#52b788',
+      icon: 'info'
+    });
+  }
+}

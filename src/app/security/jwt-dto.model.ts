@@ -7,5 +7,5 @@ export class JwtDTO {
     login?: string;
     fullName?: string;
     roles?: string[];
-    opciones?: Opcion[]; // IMPORTANTE: Para el menú dinámico de tu BD
+    opciones?: Opcion[];
 }
