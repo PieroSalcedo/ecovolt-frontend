@@ -1,0 +1,24 @@
+.hero-section {
+    background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+    padding: 60px 0;
+    color: white;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.plan-card {
+    transition: transform 0.3s ease;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.plan-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+}
+
+.price-tag {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2d6a4f;
+}

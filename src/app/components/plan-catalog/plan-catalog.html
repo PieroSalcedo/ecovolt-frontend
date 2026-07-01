@@ -1,1 +1,38 @@
-<p>plan-catalog works!</p>
+<app-menu></app-menu>
+
+<div class="hero-section">
+    <div class="container">
+        <h1>Impulsa tu Eficiencia Energética</h1>
+        <p class="lead">Elige el plan que mejor se adapte a tu hogar inteligente.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-4" *ngFor="let plan of planes">
+            <mat-card class="plan-card h-100 shadow-sm border-0">
+                <mat-card-header class="d-block text-center pt-4">
+                    <mat-card-title class="h3">{{plan.name}}</mat-card-title>
+                    <div class="price-tag my-3">S/ {{plan.monthlyPrice}}</div>
+                    <p class="text-muted">{{plan.billingCycle}}</p>
+                </mat-card-header>
+                
+                <mat-card-content class="text-center px-4">
+                    <p class="mb-4">{{plan.description}}</p>
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <mat-icon style="color: #52b788;">devices</mat-icon>
+                        <span class="ml-2">Hasta <b>{{plan.deviceLimit}}</b> dispositivos</span>
+                    </div>
+                </mat-card-content>
+
+                <mat-card-actions class="justify-content-center pb-4">
+                    <button mat-flat-button color="primary" 
+                            style="background-color: #52b788; border-radius: 20px;"
+                            (click)="verDetalle(plan)">
+                        VER DETALLES
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </div>
+</div>

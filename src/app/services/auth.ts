@@ -6,7 +6,9 @@ import { LoginUsuario } from '../security/login-usuario.model';
 import { JwtDTO } from '../security/jwt-dto.model';
 import { ApiResponseDto } from '../models/api-response.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
   private authURL = AppSettings.API_ENDPOINT + '/auth';
 

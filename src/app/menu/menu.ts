@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TokenService } from '../security/token.service';
+import { TokenService } from '../security/token';
 import { Opcion } from '../models/opcion.model';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule } from '@angular/router';
@@ -8,7 +8,7 @@ import { RouterLink, RouterModule } from '@angular/router';
   selector: 'app-menu',
   standalone: true,
   imports: [CommonModule, RouterModule, RouterLink],
-  templateUrl: './menu.component.html'
+  templateUrl: './menu.html'
 })
 export class MenuComponent implements OnInit {
   isLogged = false;

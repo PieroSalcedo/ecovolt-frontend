@@ -8,7 +8,9 @@ const NAME_KEY = 'AuthName';
 const USER_ID_KEY = 'AuthUserId';
 const OPCIONES_KEY = 'AuthOptions';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class TokenService {
 
   public setToken(token: string): void {
@@ -25,6 +27,15 @@ export class TokenService {
 
   public getUserName(): string | null {
     return sessionStorage.getItem(USERNAME_KEY);
+  }
+
+  // ESTE ES EL MÉTODO QUE TE FALTABA
+  public setUserNameComplete(name: string): void {
+    sessionStorage.setItem(NAME_KEY, name);
+  }
+
+  public getUserNameComplete(): string | null {
+    return sessionStorage.getItem(NAME_KEY);
   }
 
   public setAuthorities(authorities: string[]): void {

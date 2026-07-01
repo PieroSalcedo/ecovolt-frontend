@@ -1,1 +1,27 @@
-<p>login works!</p>
+<app-menu></app-menu>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <mat-card class="p-4" style="width: 400px; border-top: 5px solid #2d6a4f;">
+    <mat-card-header class="justify-content-center">
+      <mat-card-title><h2 style="color: #1b4332;">Bienvenido a Ecovolt</h2></mat-card-title>
+    </mat-card-header>
+    
+    <form (ngSubmit)="onLogin()" #f="ngForm" novalidate>
+      <mat-form-field appearance="outline" class="w-100 mt-3">
+        <mat-label>Usuario</mat-label>
+        <input matInput name="login" [(ngModel)]="loginUsuario.login" required>
+        <mat-icon matSuffix>person</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100 mt-2">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" name="password" [(ngModel)]="loginUsuario.password" required>
+        <mat-icon matSuffix>lock</mat-icon>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="w-100 mt-3 py-2" 
+              style="background-color: #2d6a4f;" [disabled]="!f.valid">
+        INGRESAR
+      </button>
+    </form>
+  </mat-card>
+</div>
