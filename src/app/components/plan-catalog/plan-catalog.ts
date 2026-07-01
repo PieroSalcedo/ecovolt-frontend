@@ -4,13 +4,18 @@ import { Plan } from '../../models/plan.model';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MenuComponent } from '../../menu/menu';
+import { MatIconModule } from '@angular/material/icon'; 
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-plan-catalog',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MenuComponent],
+  imports: [
+    CommonModule, 
+    MatCardModule, 
+    MatButtonModule, 
+    MatIconModule
+  ],
   templateUrl: './plan-catalog.html',
   styleUrls: ['./plan-catalog.css']
 })

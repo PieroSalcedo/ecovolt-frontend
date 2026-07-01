@@ -1,32 +1,52 @@
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #1b4332;">
+<nav class="navbar navbar-expand-lg navbar-dark shadow" style="background-color: #1b4332;">
   <div class="container">
+    <!-- Logo -->
     <a class="navbar-brand d-flex align-items-center" routerLink="/">
-      <span class="material-icons mr-2">bolt</span> ECOVOLT
+      <span class="material-icons mr-2">bolt</span>
+      <b style="letter-spacing: 1px;">ECOVOLT</b>
     </a>
-    
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Opciones de la izquierda -->
       <ul class="navbar-nav mr-auto">
-        <!-- Siempre visible -->
         <li class="nav-item">
-          <a class="nav-link" routerLink="/planes">Ver Planes</a>
+          <a class="nav-link" routerLink="/planes" routerLinkActive="active">
+            <span class="d-flex align-items-center">
+              <mat-icon class="mr-1" style="font-size: 18px; width: 18px; height: 18px;">auto_awesome_motion</mat-icon> Ver Planes
+            </span>
+          </a>
         </li>
         
-        <!-- Dinámico por BD -->
+        <!-- Opciones dinámicas de la Base de Datos (Solo si está logueado) -->
         <li class="nav-item" *ngFor="let opc of opciones">
-          <a class="nav-link" [routerLink]="opc.route">{{ opc.name }}</a>
+          <a class="nav-link" [routerLink]="opc.route" routerLinkActive="active">{{ opc.name }}</a>
         </li>
       </ul>
 
+      <!-- Opciones de la derecha -->
       <ul class="navbar-nav ml-auto">
+        <!-- CASO 1: NO ESTÁ LOGUEADO -->
         <li class="nav-item" *ngIf="!isLogged">
-          <a class="btn btn-outline-light" routerLink="/login">Iniciar Sesión</a>
-        </li>
-        <li class="nav-item dropdown" *ngIf="isLogged">
-          <a class="nav-link dropdown-toggle" href="#" id="userMenu" data-toggle="dropdown">
-            Hola, {{ nombreUsuario }}
+          <a class="btn btn-outline-light px-4" style="border-radius: 20px;" routerLink="/login">
+            <span class="d-flex align-items-center">
+              <mat-icon class="mr-1" style="font-size: 18px; width: 18px; height: 18px;">login</mat-icon> Iniciar Sesión
+            </span>
           </a>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" style="cursor:pointer" (click)="onLogOut()">Cerrar Sesión</a>
+        </li>
+
+        <!-- CASO 2: SÍ ESTÁ LOGUEADO -->
+        <li class="nav-item dropdown" *ngIf="isLogged">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <mat-icon class="mr-1">account_circle</mat-icon> Hola, {{ nombreUsuario }}
+          </a>
+          <div class="dropdown-menu dropdown-menu-right shadow border-0" aria-labelledby="navbarDropdown" style="border-radius: 10px;">
+            <a class="dropdown-item d-flex align-items-center" style="cursor: pointer;" (click)="onLogOut()">
+              <mat-icon class="mr-2 text-danger">logout</mat-icon> Cerrar Sesión
+            </a>
           </div>
         </li>
       </ul>
