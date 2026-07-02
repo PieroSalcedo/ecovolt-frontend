@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>{{vivienda.idHome ? 'Editar' : 'Registrar'}} Vivienda</h2>
+<mat-dialog-content>
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Alias / Nombre</mat-label>
+                <input matInput [(ngModel)]="vivienda.alias" required>
+            </mat-form-field>
+        </div>
+        <div class="col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Tipo de Propiedad</mat-label>
+                <mat-select [(ngModel)]="vivienda.idPropertyType">
+                    <mat-option *ngFor="let t of tipos" [value]="t.idDataCatalog">{{t.description}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Dirección Completa</mat-label>
+                <input matInput [(ngModel)]="vivienda.address">
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Ciudad</mat-label>
+                <input matInput [(ngModel)]="vivienda.city">
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>m2</mat-label>
+                <input matInput type="number" [(ngModel)]="vivienda.squareMeters">
+            </mat-form-field>
+        </div>
+        <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Tarifa S/</mat-label>
+                <input matInput type="number" [(ngModel)]="vivienda.energyTariff">
+            </mat-form-field>
+        </div>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="dialogRef.close()">Cancelar</button>
+    <button mat-raised-button color="primary" style="background-color: #2d6a4f;" (click)="guardar()">
+        {{vivienda.idHome ? 'ACTUALIZAR' : 'REGISTRAR'}}
+    </button>
+</mat-dialog-actions>
