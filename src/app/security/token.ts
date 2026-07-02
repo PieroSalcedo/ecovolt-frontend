@@ -48,13 +48,18 @@ export class TokenService {
   }
 
   public setOpciones(opciones: Opcion[]): void {
+    sessionStorage.removeItem(OPCIONES_KEY);
     sessionStorage.setItem(OPCIONES_KEY, JSON.stringify(opciones));
   }
 
   public getOpciones(): Opcion[] {
     const opcs = sessionStorage.getItem(OPCIONES_KEY);
-    return opcs ? JSON.parse(opcs) : [];
+    if (opcs) {
+      return JSON.parse(opcs);
+    }
+    return [];
   }
+
 
   public logOut(): void {
     sessionStorage.clear();

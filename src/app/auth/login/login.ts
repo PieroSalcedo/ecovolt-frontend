@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatInputModule, MatButtonModule, MatIconModule, MenuComponent],
+  imports: [CommonModule, FormsModule, MatCardModule, MatInputModule, MatButtonModule, MatIconModule],
   templateUrl: './login.html'
 })
 export class LoginComponent {
@@ -28,29 +28,30 @@ export class LoginComponent {
   ) { }
 
   onLogin(): void {
-    this.authService.login(this.loginUsuario).subscribe({
-      next: (res) => {
-        if (res.data) {
-          this.tokenService.setToken(res.data.token!);
-          this.tokenService.setUserName(res.data.login!);
-          this.tokenService.setUserNameComplete(res.data.fullName!);
-          this.tokenService.setAuthorities(res.data.roles!);
-          this.tokenService.setOpciones(res.data.opciones!);
+  this.authService.login(this.loginUsuario).subscribe({
+    next: (res) => {
+      if (res.data) {
+        this.tokenService.setToken(res.data.token!);
+        this.tokenService.setUserName(res.data.login!);
+        this.tokenService.setUserNameComplete(res.data.fullName!);
+        this.tokenService.setAuthorities(res.data.roles!);
+        this.tokenService.setOpciones(res.data.opciones!);
 
-          Swal.fire({
-            title: res.title,
-            text: res.message,
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-          }).then(() => {
-            this.router.navigate(['/']); // Redirigir al dashboard/inicio
-          });
-        }
-      },
-      error: (err) => {
-        Swal.fire('Error', err.error.message || 'Credenciales incorrectas', 'error');
+        Swal.fire({
+          title: res.title,
+          text: res.message,
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          // CAMBIO CLAVE: Usamos href para que el MenuComponent se refresque
+          window.location.href = '/'; 
+        });
       }
-    });
-  }
+    },
+    error: (err) => {
+      Swal.fire('Error', 'Credenciales incorrectas', 'error');
+    }
+  });
+}
 }
