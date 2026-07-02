@@ -1,7 +1,5 @@
-export class Usuario {
+export class User {
     idUser?: number;
     login?: string;
     fullName?: string;
-    email?: string;
-    roles?: string[];
 }

@@ -7,9 +7,12 @@ import { DataCatalog } from '../models/data-catalog.model';
 
 @Injectable({ providedIn: 'root' })
 export class UtilService {
+  private baseUrl = AppSettings.API_ENDPOINT + '/utils';
+
   constructor(private http: HttpClient) { }
 
-  listaTipoPropiedad(): Observable<ApiResponseDto<DataCatalog[]>> {
-    return this.http.get<ApiResponseDto<DataCatalog[]>>(AppSettings.API_ENDPOINT + '/utils/catalog/TIPO_PROPIEDAD');
-  }
+  public listaTipoPropiedad(): Observable<ApiResponseDto<DataCatalog[]>> {
+    // Debe ser 'TIPO_PROPIEDAD' porque así lo pusimos en el script SQL
+    return this.http.get<ApiResponseDto<DataCatalog[]>>(`${this.baseUrl}/catalog/TIPO_PROPIEDAD`);
+}
 }

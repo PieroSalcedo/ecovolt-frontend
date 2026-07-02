@@ -1,32 +1,25 @@
 import { Routes } from '@angular/router';
 import { PlanCatalogComponent } from './components/plan-catalog/plan-catalog';
 import { LoginComponent } from './auth/login/login';
-import { ViviendaComponent } from './components/vivienda/vivienda';
+
+// 1. IMPORTA TUS NUEVOS COMPONENTES (Asegúrate de que las rutas coincidan con tus archivos)
+import { RegistroVivienda } from './components/vivienda/registro-vivienda/registro-vivienda';
+import { ConsultaVivienda } from './components/vivienda/consulta-vivienda/consulta-vivienda';
 
 export const routes: Routes = [
-  // --- RUTAS PÚBLICAS ---
-  { path: '', component: PlanCatalogComponent },
+  // --- RUTA RAÍZ ---
+  { path: '', component: PlanCatalogComponent }, 
+
+  // --- LOGIN ---
   { path: 'login', component: LoginComponent },
+
+  // --- VIVIENDAS (Estilo Registro y Consulta de tu profesor) ---
+  { path: 'vivienda/registro', component: RegistroVivienda },
+  { path: 'vivienda/mantenimiento', component: ConsultaVivienda },
+
+  // --- REDIRECCIONES ---
   { path: 'planes', redirectTo: '', pathMatch: 'full' },
-
-  // --- TIPO 1: REGISTROS (Formularios) ---
-  // Por ahora apuntan a ViviendaComponent hasta que crees los específicos
-  { path: 'vivienda/registro', component: ViviendaComponent },
-  { path: 'cuarto/registro', component: ViviendaComponent },
-  { path: 'dispositivo/registro', component: ViviendaComponent },
-
-  // --- TIPO 2: CONSULTAS ---
-  { path: 'consulta/consumo', component: ViviendaComponent },
-  { path: 'consulta/alertas', component: ViviendaComponent },
-
-  // --- TIPO 3: MANTENIMIENTO (CRUD) ---
-  { path: 'vivienda/mantenimiento', component: ViviendaComponent },
-  { path: 'cuarto/mantenimiento', component: ViviendaComponent },
-  { path: 'dispositivo/mantenimiento', component: ViviendaComponent },
-
-  // --- TIPO 4: TRANSACCIONES ---
-  { path: 'transaccion/plan', component: ViviendaComponent },
-
-  // --- COMODÍN (SIEMPRE AL FINAL) ---
+  
+  // COMODÍN (Si la ruta no existe, manda al catálogo)
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

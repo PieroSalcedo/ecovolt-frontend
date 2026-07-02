@@ -36,6 +36,7 @@ export class LoginComponent {
         this.tokenService.setUserNameComplete(res.data.fullName!);
         this.tokenService.setAuthorities(res.data.roles!);
         this.tokenService.setOpciones(res.data.opciones!);
+        this.tokenService.setUserId(res.data.idUser.toString());
 
         Swal.fire({
           title: res.title,

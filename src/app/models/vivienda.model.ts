@@ -1,11 +1,11 @@
 export class Vivienda {
     idHome?: number;
+    alias?: string;
     address?: string;
     city?: string;
-    alias?: string;
     energyTariff?: number;
     squareMeters?: number;
-    idPropertyType?: number; // Para el request
-    propertyTypeName?: string; // Para mostrar en la tabla
-    idUser?: number;
+    // Estos campos vienen del ResponseDTO de tu Java
+    idPropertyType?: number;
+    propertyTypeName?: string; 
 }

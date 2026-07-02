@@ -5,30 +5,25 @@ import { AppSettings } from '../app.settings';
 import { Vivienda } from '../models/vivienda.model';
 import { ApiResponseDto } from '../models/api-response.model';
 
-const baseUrl = AppSettings.API_ENDPOINT + '/homes';
+const baseUrl = AppSettings.API_ENDPOINT + "/homes";
 
 @Injectable({ providedIn: 'root' })
 export class ViviendaService {
   constructor(private http: HttpClient) { }
 
-  // CONSULTA DINÁMICA: Filtra mientras escribes
+  registra(obj: Vivienda): Observable<ApiResponseDto<Vivienda>> {
+    return this.http.post<ApiResponseDto<Vivienda>>(baseUrl + "/registra", obj);
+  }
+
   consultaDinamica(alias: string, city: string, idTipo: number): Observable<ApiResponseDto<Vivienda[]>> {
     const params = new HttpParams()
       .set('alias', alias)
       .set('city', city)
       .set('idTipo', idTipo.toString());
-    return this.http.get<ApiResponseDto<Vivienda[]>>(`${baseUrl}/consultaDinamica`, { params });
+    return this.http.get<ApiResponseDto<Vivienda[]>>(baseUrl + "/consultaDinamica", { params });
   }
 
-  registra(obj: Vivienda): Observable<ApiResponseDto<Vivienda>> {
-    return this.http.post<ApiResponseDto<Vivienda>>(baseUrl, obj);
-  }
-
-  actualiza(obj: Vivienda): Observable<ApiResponseDto<Vivienda>> {
-    return this.http.put<ApiResponseDto<Vivienda>>(`${baseUrl}/${obj.idHome}`, obj);
-  }
-
-  elimina(id: number): Observable<ApiResponseDto<void>> {
-    return this.http.delete<ApiResponseDto<void>>(`${baseUrl}/${id}`);
+  elimina(id: number): Observable<ApiResponseDto<any>> {
+    return this.http.delete<ApiResponseDto<any>>(`${baseUrl}/elimina/${id}`);
   }
 }

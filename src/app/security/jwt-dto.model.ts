@@ -1,4 +1,4 @@
-import { Opcion } from "../models/opcion.model";
+import { Option } from "../models/option.models";
 
 export class JwtDTO {
     token?: string;
@@ -7,5 +7,5 @@ export class JwtDTO {
     login?: string;
     fullName?: string;
     roles?: string[];
-    opciones?: Opcion[];
+    opciones?: Option[];
 }

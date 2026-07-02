@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Opcion } from '../models/opcion.model';
+import { Option } from '../models/option.models';
 
 const TOKEN_KEY = 'AuthToken';
 const USERNAME_KEY = 'AuthUserName';
 const AUTHORITIES_KEY = 'AuthAuthorities';
 const NAME_KEY = 'AuthName';
-const USER_ID_KEY = 'AuthUserId';
+const USER_ID_KEY = 'AuthUserId'; // Asegúrate de que esta constante esté
 const OPCIONES_KEY = 'AuthOptions';
 
 @Injectable({
@@ -21,6 +21,16 @@ export class TokenService {
     return sessionStorage.getItem(TOKEN_KEY);
   }
 
+  // MÉTODO PARA GUARDAR EL ID
+  public setUserId(id: string): void {
+    sessionStorage.setItem(USER_ID_KEY, id);
+  }
+
+  // ESTE ES EL MÉTODO QUE TE FALTABA
+  public getUserId(): string | null {
+    return sessionStorage.getItem(USER_ID_KEY);
+  }
+
   public setUserName(userName: string): void {
     sessionStorage.setItem(USERNAME_KEY, userName);
   }
@@ -29,7 +39,6 @@ export class TokenService {
     return sessionStorage.getItem(USERNAME_KEY);
   }
 
-  // ESTE ES EL MÉTODO QUE TE FALTABA
   public setUserNameComplete(name: string): void {
     sessionStorage.setItem(NAME_KEY, name);
   }
@@ -47,17 +56,13 @@ export class TokenService {
     return auths ? JSON.parse(auths) : [];
   }
 
-  public setOpciones(opciones: Opcion[]): void {
-    sessionStorage.removeItem(OPCIONES_KEY);
+  public setOpciones(opciones: Option[]): void {
     sessionStorage.setItem(OPCIONES_KEY, JSON.stringify(opciones));
   }
 
-  public getOpciones(): Opcion[] {
+  public getOpciones(): Option[] {
     const opcs = sessionStorage.getItem(OPCIONES_KEY);
-    if (opcs) {
-      return JSON.parse(opcs);
-    }
-    return [];
+    return opcs ? JSON.parse(opcs) : [];
   }
 
   public logOut(): void {

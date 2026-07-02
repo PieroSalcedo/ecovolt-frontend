@@ -3,7 +3,7 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HTTP_INTERCEPTORS
 import { Observable } from 'rxjs';
 import { TokenService } from '../security/token';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class ProdInterceptorService implements HttpInterceptor {
   constructor(private tokenService: TokenService) {}
 
@@ -18,4 +18,6 @@ export class ProdInterceptorService implements HttpInterceptor {
     return next.handle(intReq);
   }
 }
+
+// ESTO ES LO QUE SE IMPORTA EN APP.CONFIG.TS
 export const interceptorProvider = [{ provide: HTTP_INTERCEPTORS, useClass: ProdInterceptorService, multi: true }];
