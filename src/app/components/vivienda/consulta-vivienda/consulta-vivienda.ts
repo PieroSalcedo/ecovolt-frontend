@@ -50,9 +50,9 @@ export class ConsultaVivienda implements OnInit {
 
   consultar() {
     this.vService.consultaDinamica(this.alias, this.city, this.idTipo).subscribe(res => {
-      this.dataSource.data = res.data || []; // Asegúrate que sea .data
+      this.dataSource.data = res.data || []; 
       this.dataSource.paginator = this.paginator;
-      this.cd.detectChanges(); // Por si acaso
+      this.cd.detectChanges();
     });
   }
 
