@@ -53,5 +53,5 @@ export class LoginComponent {
       Swal.fire('Error', 'Credenciales incorrectas', 'error');
     }
   });
-}
+  }
 }

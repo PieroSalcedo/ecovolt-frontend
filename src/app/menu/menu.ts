@@ -19,20 +19,32 @@ export class MenuComponent implements OnInit {
   constructor(private tokenService: TokenService) { }
 
   ngOnInit(): void {
-  const token = this.tokenService.getToken();
-  if (token) {
-    this.isLogged = true;
-    this.opciones = this.tokenService.getOpciones();
-    this.nombreUsuario = this.tokenService.getUserNameComplete() || '';
-  } else {
-    this.isLogged = false;
-    this.opciones = [];
-    this.nombreUsuario = '';
+    this.validarSesion();
   }
-}
+
+  validarSesion(): void {
+    const token = this.tokenService.getToken();
+    if (token) {
+      this.isLogged = true;
+      
+      // LIMPIEZA DE RUTAS: Quitamos el "/" inicial de lo que viene de la BD
+      const opcsBD = this.tokenService.getOpciones();
+      this.opciones = opcsBD.map(op => {
+        let r = op.route || '';
+        if (r.startsWith('/')) { r = r.substring(1); }
+        return { ...op, route: r };
+      });
+
+      this.nombreUsuario = this.tokenService.getUserNameComplete() || '';
+    } else {
+      this.isLogged = false;
+      this.opciones = [];
+      this.nombreUsuario = '';
+    }
+  }
 
   onLogOut(): void {
     this.tokenService.logOut();
-    window.location.reload();
+    window.location.href = '/'; // Forzamos salida a la raíz
   }
 }

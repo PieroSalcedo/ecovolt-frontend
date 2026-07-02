@@ -1,64 +1,55 @@
 <nav class="navbar navbar-expand-lg navbar-dark shadow" style="background-color: #1b4332; padding: 0.8rem 1rem;">
   <div class="container">
-    <!-- Logo Ecovolt -->
-    <a class="navbar-brand d-flex align-items-center" routerLink="/" style="font-weight: 700; font-size: 1.5rem;">
+    <a class="navbar-brand d-flex align-items-center" routerLink="/" style="font-weight: 700; font-size: 1.5rem; cursor: pointer;">
       <mat-icon class="mr-2">bolt</mat-icon>
       <span style="letter-spacing: 2px;">ECOVOLT</span>
     </a>
 
-    <!-- Botón para móviles -->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ecovoltNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="ecovoltNavbar">
-      <!-- LADO IZQUIERDO: Navegación -->
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" routerLink="/planes" routerLinkActive="active">
+          <a class="nav-link d-flex align-items-center" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" style="cursor: pointer;">
             <mat-icon class="mr-1" style="font-size: 20px;">layers</mat-icon> Ver Planes
           </a>
         </li>
         
-        <!-- Opciones dinámicas de la Base de Datos (Solo si hay sesión) -->
+        <!-- OPCIONES DINÁMICAS: Limpias y con cursor -->
         <li class="nav-item" *ngFor="let opc of opciones">
-          <a class="nav-link" [routerLink]="opc.route" routerLinkActive="active">{{ opc.name }}</a>
+          <a class="nav-link d-flex align-items-center" 
+            [routerLink]="['/', opc.route]" 
+            routerLinkActive="active"
+            style="cursor: pointer;">
+            <mat-icon class="mr-1" style="font-size: 18px;">chevron_right</mat-icon>
+            {{ opc.name }}
+          </a>
         </li>
       </ul>
 
-      <!-- LADO DERECHO: Usuario / Auth -->
       <ul class="navbar-nav ml-auto">
-        
-        <!-- BOTÓN INICIAR SESIÓN: Solo se ve si NO hay token -->
         <li class="nav-item" *ngIf="!isLogged">
           <a class="btn btn-outline-light px-4" style="border-radius: 20px; font-weight: 500;" routerLink="/login">
-            <div class="d-flex align-items-center">
-              <mat-icon class="mr-1">login</mat-icon> Iniciar Sesión
-            </div>
+            <div class="d-flex align-items-center"><mat-icon class="mr-1">login</mat-icon> Iniciar Sesión</div>
           </a>
         </li>
 
-        <!-- DROPDOWN USUARIO: Solo se ve si SÍ hay token -->
         <li class="nav-item dropdown" *ngIf="isLogged">
           <a class="nav-link dropdown-toggle d-flex align-items-center" 
              href="#" id="userDropdown" role="button" 
-             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">
             <mat-icon class="mr-2">account_circle</mat-icon>
             <span>Hola, <b>{{ nombreUsuario }}</b></span>
           </a>
           
           <div class="dropdown-menu dropdown-menu-right shadow-lg border-0 mt-2" aria-labelledby="userDropdown" style="border-radius: 12px;">
-            <div class="dropdown-header">Mi Cuenta</div>
-            <a class="dropdown-item d-flex align-items-center py-2" routerLink="/perfil">
-              <mat-icon class="mr-2" style="font-size: 18px;">settings</mat-icon> Configuración
-            </a>
-            <div class="dropdown-divider"></div>
             <a class="dropdown-item d-flex align-items-center py-2 text-danger" (click)="onLogOut()" style="cursor: pointer;">
               <mat-icon class="mr-2" style="font-size: 18px;">power_settings_new</mat-icon> Cerrar Sesión
             </a>
           </div>
         </li>
-
       </ul>
     </div>
   </div>

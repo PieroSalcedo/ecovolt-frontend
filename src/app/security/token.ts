@@ -60,7 +60,6 @@ export class TokenService {
     return [];
   }
 
-
   public logOut(): void {
     sessionStorage.clear();
   }

@@ -7,12 +7,9 @@ import { DataCatalog } from '../models/data-catalog.model';
 
 @Injectable({ providedIn: 'root' })
 export class UtilService {
-  private baseUrl = AppSettings.API_ENDPOINT + '/utils';
-
   constructor(private http: HttpClient) { }
 
-  // Traer tipos de propiedad (Departamento, Casa, etc.) del catálogo
-  public listaTipoPropiedad(): Observable<ApiResponseDto<DataCatalog[]>> {
-    return this.http.get<ApiResponseDto<DataCatalog[]>>(`${this.baseUrl}/catalog/TIPO_PROPIEDAD`);
+  listaTipoPropiedad(): Observable<ApiResponseDto<DataCatalog[]>> {
+    return this.http.get<ApiResponseDto<DataCatalog[]>>(AppSettings.API_ENDPOINT + '/utils/catalog/TIPO_PROPIEDAD');
   }
 }

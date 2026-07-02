@@ -6,46 +6,42 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ViviendaService } from '../../services/vivienda';
 import { UtilService } from '../../services/util';
 import { Vivienda } from '../../models/vivienda.model';
 import { DataCatalog } from '../../models/data-catalog.model';
-import Swal from 'sweetalert2';
 import { ViviendaModalComponent } from '../vivienda-modal/vivienda-modal';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-vivienda',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginatorModule, MatDialogModule, MatIconModule, MatButtonModule, MatInputModule, MatSelectModule],
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginatorModule, MatDialogModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule],
   templateUrl: './vivienda.html'
 })
 export class ViviendaComponent implements OnInit {
 
-  // Filtros para consulta dinámica
+  // Filtros
   alias: string = "";
   city: string = "";
   idTipo: number = -1;
   tipos: DataCatalog[] = [];
 
-  // Configuración de Tabla
+  // Tabla
   dataSource = new MatTableDataSource<Vivienda>();
   displayedColumns = ['idHome', 'alias', 'address', 'city', 'acciones'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(
-    private viviendaService: ViviendaService, 
-    private utilService: UtilService,
-    private dialog: MatDialog
-  ) {}
+  constructor(private viviendaService: ViviendaService, private utilService: UtilService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.utilService.listaTipoPropiedad().subscribe(res => this.tipos = res.data);
     this.consultar();
   }
 
-  // Se ejecuta en cada teclazo (keyup)
   consultar() {
     this.viviendaService.consultaDinamica(this.alias, this.city, this.idTipo)
       .subscribe(res => {
@@ -56,12 +52,11 @@ export class ViviendaComponent implements OnInit {
 
   eliminar(obj: Vivienda) {
     Swal.fire({
-      title: '¿Estás seguro?',
-      text: `Eliminarás la vivienda: ${obj.alias}`,
+      title: '¿Eliminar Vivienda?',
+      text: `Se borrará "${obj.alias}"`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#2d6a4f',
-      cancelButtonColor: '#d33',
+      confirmButtonColor: '#d33',
       confirmButtonText: 'Sí, eliminar'
     }).then((result) => {
       if (result.isConfirmed) {
@@ -75,12 +70,11 @@ export class ViviendaComponent implements OnInit {
 
   openModal(obj?: Vivienda) {
     const dialogRef = this.dialog.open(ViviendaModalComponent, {
-      width: '600px',
-      data: obj // Si viene obj es edición, si no es registro
+      width: '700px',
+      data: obj
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) this.consultar();
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) this.consultar();
     });
   }
 }
