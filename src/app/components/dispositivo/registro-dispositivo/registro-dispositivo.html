@@ -1,0 +1,69 @@
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h5>Vincular Dispositivo IoT</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="forms" (ngSubmit)="registrar()">
+        
+        <div class="row">
+          <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Vivienda</mat-label>
+            <mat-select formControlName="idHome" (selectionChange)="onHomeChange($event.value)">
+              <mat-option [value]="-1">-- Seleccione --</mat-option>
+              <mat-option *ngFor="let v of viviendas" [value]="v.idHome">
+                {{ v.alias }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-6">
+            <mat-label>Habitación / Ambiente</mat-label>
+            <mat-select formControlName="idRoom">
+              <mat-option [value]="-1">-- Seleccione --</mat-option>
+              <mat-option *ngFor="let c of cuartos" [value]="c.idRoom">
+                {{ c.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="row">
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Nombre del Dispositivo</mat-label>
+            <input matInput formControlName="name" placeholder="Ej. Televisor, Refrigeradora">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Número de Serie / MAC</mat-label>
+            <input matInput formControlName="serialNumber" placeholder="SN-XXXXX o dirección MAC">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Marca / Fabricante</mat-label>
+            <input matInput formControlName="brand" placeholder="Ej. LG, Samsung, Sony">
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Categoría del Equipo</mat-label>
+            <mat-select formControlName="idCategory">
+              <mat-option [value]="-1">-- Seleccione --</mat-option>
+              <mat-option *ngFor="let cat of categorias" [value]="cat.idDataCatalog">
+                {{ cat.value }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="row justify-content-end mt-2">
+          <div class="col-md-3">
+            <button mat-raised-button color="primary" class="w-100 p-4" [disabled]="forms.invalid">
+              VINCULAR EQUIPO
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

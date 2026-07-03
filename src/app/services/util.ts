@@ -11,8 +11,13 @@ export class UtilService {
 
   constructor(private http: HttpClient) { }
 
+  // MÉTODO GENÉRICO: Sirve para TIPO_PROPIEDAD, TIPO_HABITACION, etc.
+  public getCatalog(description: string): Observable<ApiResponseDto<DataCatalog[]>> {
+    return this.http.get<ApiResponseDto<DataCatalog[]>>(`${this.baseUrl}/catalog/${description}`);
+  }
+
+  // Mantén este si lo usas en Vivienda para no romper nada
   public listaTipoPropiedad(): Observable<ApiResponseDto<DataCatalog[]>> {
-    // Debe ser 'TIPO_PROPIEDAD' porque así lo pusimos en el script SQL
-    return this.http.get<ApiResponseDto<DataCatalog[]>>(`${this.baseUrl}/catalog/TIPO_PROPIEDAD`);
-}
+    return this.getCatalog('TIPO_PROPIEDAD');
+  }
 }

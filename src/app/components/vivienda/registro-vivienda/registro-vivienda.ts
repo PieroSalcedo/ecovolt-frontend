@@ -31,12 +31,13 @@ export class RegistroVivienda implements OnInit {
   forms: FormGroup;
   tipos: any[] = [];
 
-  constructor(private fb: FormBuilder, private util: UtilService, private vService: ViviendaService,private tokenService: TokenService) {
+  constructor(private fb: FormBuilder, private util: UtilService, private vService: ViviendaService, private tokenService: TokenService) {
     this.forms = this.fb.group({
       alias: ['', Validators.required],
       city: ['', Validators.required],
       address: ['', Validators.required],
       energyTariff: [0, Validators.required],
+      squareMeters: [0, [Validators.required, Validators.min(1)]], // <-- 1. Agregamos el campo al Form
       idPropertyType: [-1, Validators.min(1)]
     });
   }
@@ -46,27 +47,28 @@ export class RegistroVivienda implements OnInit {
   }
 
   registrar() {
-  if (this.forms.invalid) return;
+    if (this.forms.invalid) return;
 
-  // Creamos el objeto exactamente como lo espera el HomeDto.Request de Java
-  const data = {
-    alias: this.forms.value.alias,
-    city: this.forms.value.city,
-    address: this.forms.value.address,
-    energyTariff: this.forms.value.energyTariff,
-    idPropertyType: this.forms.value.idPropertyType, // El ID del combo
-    idUser: Number(this.tokenService.getUserId())    // ID del usuario logueado
-  };
+    // Creamos el objeto exactamente como lo espera el HomeDto.Request de Java
+    const data = {
+      alias: this.forms.value.alias,
+      city: this.forms.value.city,
+      address: this.forms.value.address,
+      energyTariff: this.forms.value.energyTariff,
+      squareMeters: this.forms.value.squareMeters, // <-- 2. Lo mapeamos aquí para que viaje en el JSON
+      idPropertyType: this.forms.value.idPropertyType, 
+      idUser: Number(this.tokenService.getUserId())    
+    };
 
-  this.vService.registra(data).subscribe({
-    next: (res) => {
-      Swal.fire("Éxito", res.message, "success");
-      this.forms.reset();
-    },
-    error: (err) => {
-      console.error(err);
-      Swal.fire("Error", "No tienes permisos o la sesión caducó", "error");
-    }
-  });
-}
+    this.vService.registra(data).subscribe({
+      next: (res) => {
+        Swal.fire("Éxito", res.message, "success");
+        this.forms.reset({ energyTariff: 0, squareMeters: 0, idPropertyType: -1 }); // Reset estructurado
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire("Error", "No tienes permisos o la sesión caducó", "error");
+      }
+    });
+  }
 }

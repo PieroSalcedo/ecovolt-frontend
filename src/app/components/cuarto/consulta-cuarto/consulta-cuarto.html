@@ -1,0 +1,77 @@
+<div class="container mt-4">
+  <!-- BARRA DE BÚSQUEDA DINÁMICA -->
+  <div class="row mb-3 align-items-center p-3 border rounded bg-white shadow-sm mx-1">
+    <div class="col-md-3">
+        <input class="form-control" placeholder="Nombre (Ej: Sala)" [(ngModel)]="nombre" (keyup.enter)="consultar()">
+    </div>
+    <div class="col-md-3">
+      <select class="form-control" [(ngModel)]="idHome">
+        <option [value]="-1">-- Todas mis casas --</option>
+        <option *ngFor="let v of viviendas" [value]="v.idHome">{{ v.alias }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select class="form-control" [(ngModel)]="idTipo">
+        <option [value]="-1">-- Todos los tipos --</option>
+        <option *ngFor="let t of tipos" [value]="t.idDataCatalog">{{ t.value }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+        <button class="btn btn-primary w-100" (click)="consultar()">
+            <mat-icon style="font-size: 18px; vertical-align: middle;">search</mat-icon> FILTRAR
+        </button>
+    </div>
+  </div>
+
+  <!-- TABLA DE RESULTADOS (Estilo profesor con iconos) -->
+  <div class="mat-elevation-z2 rounded overflow-hidden">
+    <table mat-table [dataSource]="dataSource" class="w-100">
+      
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let x"> {{x.idRoom}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef> Ambiente </th>
+        <td mat-cell *matCellDef="let x"> <b>{{x.name}}</b> </td>
+      </ng-container>
+
+      <ng-container matColumnDef="casa">
+        <th mat-header-cell *matHeaderCellDef> Ubicación (Casa) </th>
+        <td mat-cell *matCellDef="let x"> {{x.homeAddress}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tipo">
+        <th mat-header-cell *matHeaderCellDef> Tipo </th>
+        <td mat-cell *matCellDef="let x"> {{x.roomTypeName}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="piso">
+        <th mat-header-cell *matHeaderCellDef> Piso </th>
+        <td mat-cell *matCellDef="let x"> {{x.floorNumber}}° </td>
+      </ng-container>
+
+      <ng-container matColumnDef="area">
+        <th mat-header-cell *matHeaderCellDef> Área </th>
+        <td mat-cell *matCellDef="let x"> {{x.areaSqm}} m2 </td>
+      </ng-container>
+      
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Acciones </th>
+        <td mat-cell *matCellDef="let x" style="text-align: center;">
+          <button mat-icon-button color="primary" (click)="actualizar(x)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="eliminar(x.idRoom, x.name)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

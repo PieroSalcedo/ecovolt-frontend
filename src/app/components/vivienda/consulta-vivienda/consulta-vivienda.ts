@@ -35,7 +35,7 @@ export class ConsultaVivienda implements OnInit {
   tipos: any[] = [];
 
   dataSource = new MatTableDataSource<any>();
-  displayedColumns = ["id", "alias", "ciudad", "tipo", "tarifa", "acciones"];
+  displayedColumns = ["id", "alias", "ciudad", "tipo", "tarifa", "area", "acciones"];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private vService: ViviendaService, private util: UtilService,private cd: ChangeDetectorRef) {}
