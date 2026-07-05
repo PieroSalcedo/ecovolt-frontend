@@ -29,6 +29,10 @@ export class ConsultaCuarto implements OnInit {
   viviendas: any[] = [];
   tipos: any[] = [];
   cuartoActualiza: any = null;
+  textoGeneralPattern = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ0-9 ]{2,60}$/;
+  soloLetrasPattern = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ ]{0,60}$/;
+  numeroEnteroPattern = /^[0-9]+$/;
+  numeroDecimalPattern = /^[0-9]+(\.[0-9]{1,2})?$/;
 
   // Configuración de Tabla
   dataSource = new MatTableDataSource<any>([]);
@@ -58,6 +62,11 @@ export class ConsultaCuarto implements OnInit {
   }
 
   consultar() {
+    if (this.nombre && !this.textoGeneralPattern.test(this.nombre)) {
+      Swal.fire('Validacion', 'El nombre del ambiente solo permite letras, numeros y espacios.', 'warning');
+      return;
+    }
+
     // Sincronizado con la URL: ?name=X&idHome=Y&idTipo=Z
     this.cService.consultaDinamica(this.nombre, this.idHome, this.idTipo).subscribe({
       next: (res) => {
@@ -108,9 +117,14 @@ export class ConsultaCuarto implements OnInit {
   guardarActualizacion() {
     if (!this.cuartoActualiza) return;
 
-    if (!this.cuartoActualiza.name || Number(this.cuartoActualiza.idHome) < 1 ||
-      Number(this.cuartoActualiza.idRoomType) < 1 || Number(this.cuartoActualiza.areaSqm) < 0) {
-      Swal.fire('Validacion', 'Completa los campos permitidos correctamente.', 'warning');
+    if (!this.textoGeneralPattern.test(this.cuartoActualiza.name || '') ||
+      !this.soloLetrasPattern.test(this.cuartoActualiza.orientation || '') ||
+      !this.numeroEnteroPattern.test(String(this.cuartoActualiza.floorNumber || '')) ||
+      !this.numeroDecimalPattern.test(String(this.cuartoActualiza.areaSqm || '')) ||
+      Number(this.cuartoActualiza.idHome) < 1 ||
+      Number(this.cuartoActualiza.idRoomType) < 1 ||
+      Number(this.cuartoActualiza.areaSqm) < 1) {
+      Swal.fire('Validacion', 'Completa los campos correctamente. Evita caracteres especiales y usa solo numeros en piso y area.', 'warning');
       return;
     }
 

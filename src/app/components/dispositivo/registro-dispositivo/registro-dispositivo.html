@@ -15,6 +15,7 @@
                 {{ v.alias }}
               </mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idHome')?.hasError('min')">Selecciona una vivienda</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-6">
@@ -25,6 +26,7 @@
                 {{ c.name }}
               </mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idRoom')?.hasError('min')">Selecciona una habitacion</mat-error>
           </mat-form-field>
         </div>
 
@@ -32,16 +34,22 @@
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Nombre del Dispositivo</mat-label>
             <input matInput formControlName="name" placeholder="Ej. Televisor, Refrigeradora">
+            <mat-error *ngIf="forms.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+            <mat-error *ngIf="forms.get('name')?.hasError('pattern')">Solo letras, numeros y espacios entre 2 y 60 caracteres</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Numero de Serie / MAC</mat-label>
             <input matInput formControlName="serialNumber" placeholder="SN-XXXXX o direccion MAC">
+            <mat-error *ngIf="forms.get('serialNumber')?.hasError('required')">El serial es obligatorio</mat-error>
+            <mat-error *ngIf="forms.get('serialNumber')?.hasError('pattern')">Solo letras, numeros, guion y dos puntos</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Marca / Fabricante</mat-label>
             <input matInput formControlName="brand" placeholder="Ej. LG, Samsung, Sony">
+            <mat-error *ngIf="forms.get('brand')?.hasError('required')">La marca es obligatoria</mat-error>
+            <mat-error *ngIf="forms.get('brand')?.hasError('pattern')">Solo letras, numeros y espacios entre 2 y 60 caracteres</mat-error>
           </mat-form-field>
           
           <mat-form-field appearance="outline" class="col-md-3">
@@ -52,12 +60,13 @@
                 {{ cat.value }}
               </mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idCategory')?.hasError('min')">Selecciona una categoria</mat-error>
           </mat-form-field>
         </div>
 
         <div class="row justify-content-end mt-2">
           <div class="col-md-3">
-            <button mat-raised-button color="primary" class="ev-glow-btn w-100 p-4 font-weight-bold" style="background-color: #4f46e5; color: #fff; border-radius: 8px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" [disabled]="forms.invalid">
+            <button mat-raised-button color="primary" type="submit" class="ev-glow-btn w-100 p-4 font-weight-bold" style="background-color: #4f46e5; color: #fff; border-radius: 8px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;">
               VINCULAR EQUIPO
             </button>
           </div>

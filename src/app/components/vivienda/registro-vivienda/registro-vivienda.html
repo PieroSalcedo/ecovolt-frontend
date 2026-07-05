@@ -9,25 +9,35 @@
           <mat-form-field appearance="outline" class="col-md-6">
             <mat-label>Nombre / Alias</mat-label>
             <input matInput formControlName="alias">
+            <mat-error *ngIf="forms.get('alias')?.hasError('required')">El alias es obligatorio</mat-error>
+            <mat-error *ngIf="forms.get('alias')?.hasError('pattern')">Debe incluir letras; permite numeros y espacios entre 2 y 60 caracteres</mat-error>
           </mat-form-field>
           <mat-form-field appearance="outline" class="col-md-6">
             <mat-label>Ciudad</mat-label>
             <input matInput formControlName="city">
+            <mat-error *ngIf="forms.get('city')?.hasError('required')">La ciudad es obligatoria</mat-error>
+            <mat-error *ngIf="forms.get('city')?.hasError('pattern')">Solo letras y espacios entre 2 y 60 caracteres</mat-error>
           </mat-form-field>
         </div>
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Direcci&oacute;n completa</mat-label>
           <input matInput formControlName="address">
+          <mat-error *ngIf="forms.get('address')?.hasError('required')">La direccion es obligatoria</mat-error>
+          <mat-error *ngIf="forms.get('address')?.hasError('pattern')">Ingresa una direccion valida entre 5 y 120 caracteres</mat-error>
         </mat-form-field>
         <div class="row align-items-start">
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Tarifa (S/)</mat-label>
-            <input matInput type="number" formControlName="energyTariff">
+            <input matInput type="text" inputmode="decimal" formControlName="energyTariff">
+            <mat-error *ngIf="forms.get('energyTariff')?.hasError('required')">La tarifa es obligatoria</mat-error>
+            <mat-error *ngIf="forms.get('energyTariff')?.hasError('pattern')">Solo numeros positivos</mat-error>
           </mat-form-field>
           
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Area (m2)</mat-label>
-            <input matInput type="number" formControlName="squareMeters">
+            <input matInput type="text" inputmode="decimal" formControlName="squareMeters">
+            <mat-error *ngIf="forms.get('squareMeters')?.hasError('required')">El area es obligatoria</mat-error>
+            <mat-error *ngIf="forms.get('squareMeters')?.hasError('min') || forms.get('squareMeters')?.hasError('pattern')">Solo numeros mayores a 0</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-4">
@@ -38,9 +48,10 @@
                 {{ t.value }} 
                 </mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idPropertyType')?.hasError('min')">Selecciona un tipo de propiedad</mat-error>
           </mat-form-field>
           <div class="col-md-2 mt-2">
-            <button mat-raised-button color="primary" class="ev-glow-btn w-100 p-4 font-weight-bold" style="background-color: #4f46e5; color: #fff; border-radius: 8px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" [disabled]="forms.invalid">GUARDAR</button>
+            <button mat-raised-button color="primary" type="submit" class="ev-glow-btn w-100 p-4 font-weight-bold" style="background-color: #4f46e5; color: #fff; border-radius: 8px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;">GUARDAR</button>
           </div>
         </div>
       </form>

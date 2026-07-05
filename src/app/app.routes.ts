@@ -9,6 +9,7 @@ import { RegistroCuarto } from './components/cuarto/registro-cuarto/registro-cua
 import { ConsultaCuarto } from './components/cuarto/consulta-cuarto/consulta-cuarto';
 import { ConsultaDispositivo } from './components/dispositivo/consulta-dispositivo/consulta-dispositivo';
 import { RegistroDispositivo } from './components/dispositivo/registro-dispositivo/registro-dispositivo';
+import { SmartAdvisor } from './components/advisor/smart-advisor/smart-advisor';
 
 export const routes: Routes = [
   // --- RUTA RAÍZ ---
@@ -28,6 +29,9 @@ export const routes: Routes = [
   // --- DISPOSITIVOS ---
   { path: 'dispositivo/registro', component: RegistroDispositivo },
   { path: 'dispositivo/mantenimiento', component: ConsultaDispositivo },
+
+  // --- SMART ADVISOR ---
+  { path: 'advisor/smart', component: SmartAdvisor },
 
   // --- REDIRECCIONES ---
   { path: 'planes', redirectTo: '', pathMatch: 'full' },

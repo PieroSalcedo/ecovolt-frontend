@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { DispositivoService } from '../../../services/dispositivo';
 import { CuartoService } from '../../../services/cuarto';
 import { ViviendaService } from '../../../services/vivienda';
-import { UtilService } from '../../../services/util'; // <-- Ajusta la ruta según tu proyecto
+import { UtilService } from '../../../services/util';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -16,12 +16,12 @@ import Swal from 'sweetalert2';
   selector: 'app-registro-dispositivo',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    MatFormFieldModule, 
-    MatInputModule, 
-    MatSelectModule, 
-    MatButtonModule, 
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
     MatIconModule
   ],
   templateUrl: './registro-dispositivo.html'
@@ -31,6 +31,8 @@ export class RegistroDispositivo implements OnInit {
   viviendas: any[] = [];
   cuartos: any[] = [];
   categorias: any[] = [];
+  textoGeneralPattern = /^(?=.*[A-Za-z\u00C0-\u017F])[A-Za-z\u00C0-\u017F0-9 ]{2,60}$/;
+  serialPattern = /^[A-Za-z0-9:-]{3,40}$/;
 
   constructor(
     private fb: FormBuilder,
@@ -41,26 +43,22 @@ export class RegistroDispositivo implements OnInit {
   ) {
     this.forms = this.fb.group({
       idHome: [-1, [Validators.required, Validators.min(1)]],
-      // Inicializado como deshabilitado reactivamente para evitar advertencias en el DOM
       idRoom: [{ value: -1, disabled: true }, [Validators.required, Validators.min(1)]],
-      name: ['', Validators.required],
-      serialNumber: ['', Validators.required],
-      brand: ['', Validators.required],
+      name: ['', [Validators.required, Validators.pattern(this.textoGeneralPattern)]],
+      serialNumber: ['', [Validators.required, Validators.pattern(this.serialPattern)]],
+      brand: ['', [Validators.required, Validators.pattern(this.textoGeneralPattern)]],
       idCategory: [-1, [Validators.required, Validators.min(1)]]
     });
   }
 
   ngOnInit(): void {
-    // 1. Cargar Viviendas
     this.vService.consultaDinamica("", "", -1).subscribe(res => this.viviendas = res.data || []);
-
-    // 2. Cargar Categorías desde el DataCatalog (usa el código/tipo que corresponda en tu BD)
     this.utilService.getCatalog('CATEGORIA_DISPOSITIVO').subscribe(res => this.categorias = res.data || []);
   }
 
   onHomeChange(homeId: number) {
     this.cuartos = [];
-    
+
     if (homeId > 0) {
       this.cService.consultaDinamica("", homeId, -1).subscribe({
         next: (roomRes) => {
@@ -85,12 +83,15 @@ export class RegistroDispositivo implements OnInit {
   }
 
   registrar() {
-    if (this.forms.invalid) return;
+    if (this.forms.invalid) {
+      this.forms.markAllAsTouched();
+      Swal.fire('Datos incorrectos', 'Revisa los campos marcados antes de vincular el equipo.', 'warning');
+      return;
+    }
 
-    // getRawValue() extrae todos los campos incluso si idRoom está deshabilitado
     this.dService.registra(this.forms.getRawValue()).subscribe({
       next: (res) => {
-        Swal.fire("Vínculo Exitoso", res.message, "success");
+        Swal.fire("Vinculo Exitoso", res.message, "success");
         this.forms.reset({ idHome: -1, idRoom: -1, idCategory: -1 });
         this.forms.get('idRoom')?.disable();
         this.cuartos = [];

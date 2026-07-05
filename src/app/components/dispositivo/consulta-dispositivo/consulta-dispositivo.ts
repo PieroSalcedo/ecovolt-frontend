@@ -30,6 +30,7 @@ export class ConsultaDispositivo implements OnInit {
   categorias: any[] = [];
   habitacionesActualiza: any[] = [];
   dispositivoActualiza: any = null;
+  textoGeneralPattern = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ0-9 ]{2,60}$/;
 
   dataSource = new MatTableDataSource<any>([]);
   displayedColumns = ["id", "serial", "nombre", "marca", "ambiente", "acciones"];
@@ -67,6 +68,11 @@ export class ConsultaDispositivo implements OnInit {
   }
 
   consultar() {
+    if (this.filtroNombre && !this.textoGeneralPattern.test(this.filtroNombre)) {
+      Swal.fire('Validacion', 'El nombre del dispositivo solo permite letras, numeros y espacios.', 'warning');
+      return;
+    }
+
     this.dService.consultaDinamica(this.filtroHome, this.filtroRoom, this.filtroNombre).subscribe({
       next: (res) => {
         this.dataSource.data = res.data || [];
@@ -121,10 +127,11 @@ export class ConsultaDispositivo implements OnInit {
   guardarActualizacion() {
     if (!this.dispositivoActualiza) return;
 
-    if (!this.dispositivoActualiza.name || !this.dispositivoActualiza.brand ||
+    if (!this.textoGeneralPattern.test(this.dispositivoActualiza.name || '') ||
+      !this.textoGeneralPattern.test(this.dispositivoActualiza.brand || '') ||
       Number(this.dispositivoActualiza.idRoom) < 1 ||
       Number(this.dispositivoActualiza.idCategory) < 1) {
-      Swal.fire('Validacion', 'Completa los campos permitidos correctamente.', 'warning');
+      Swal.fire('Validacion', 'Completa los campos correctamente. Nombre y marca solo permiten letras, numeros y espacios.', 'warning');
       return;
     }
 

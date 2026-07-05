@@ -30,14 +30,18 @@ import Swal from 'sweetalert2';
 export class RegistroVivienda implements OnInit {
   forms: FormGroup;
   tipos: any[] = [];
+  textoGeneralPattern = /^(?=.*[A-Za-z\u00C0-\u017F])[A-Za-z\u00C0-\u017F0-9 ]{2,60}$/;
+  soloLetrasPattern = /^[A-Za-z\u00C0-\u017F ]{2,60}$/;
+  direccionPattern = /^(?=.*[A-Za-z\u00C0-\u017F])[A-Za-z\u00C0-\u017F0-9 .,#°/-]{5,120}$/;
+  numeroDecimalPattern = /^[0-9]+(\.[0-9]{1,2})?$/;
 
   constructor(private fb: FormBuilder, private util: UtilService, private vService: ViviendaService, private tokenService: TokenService) {
     this.forms = this.fb.group({
-      alias: ['', Validators.required],
-      city: ['', Validators.required],
-      address: ['', Validators.required],
-      energyTariff: [0, Validators.required],
-      squareMeters: [0, [Validators.required, Validators.min(1)]], // <-- 1. Agregamos el campo al Form
+      alias: ['', [Validators.required, Validators.pattern(this.textoGeneralPattern)]],
+      city: ['', [Validators.required, Validators.pattern(this.soloLetrasPattern)]],
+      address: ['', [Validators.required, Validators.pattern(this.direccionPattern)]],
+      energyTariff: [0, [Validators.required, Validators.pattern(this.numeroDecimalPattern)]],
+      squareMeters: [0, [Validators.required, Validators.min(1), Validators.pattern(this.numeroDecimalPattern)]], // <-- 1. Agregamos el campo al Form
       idPropertyType: [-1, Validators.min(1)]
     });
   }
@@ -47,15 +51,19 @@ export class RegistroVivienda implements OnInit {
   }
 
   registrar() {
-    if (this.forms.invalid) return;
+    if (this.forms.invalid) {
+      this.forms.markAllAsTouched();
+      Swal.fire('Datos incorrectos', 'Revisa los campos marcados antes de guardar.', 'warning');
+      return;
+    }
 
     // Creamos el objeto exactamente como lo espera el HomeDto.Request de Java
     const data = {
       alias: this.forms.value.alias,
       city: this.forms.value.city,
       address: this.forms.value.address,
-      energyTariff: this.forms.value.energyTariff,
-      squareMeters: this.forms.value.squareMeters, // <-- 2. Lo mapeamos aquí para que viaje en el JSON
+      energyTariff: Number(this.forms.value.energyTariff),
+      squareMeters: Number(this.forms.value.squareMeters), // <-- 2. Lo mapeamos aquí para que viaje en el JSON
       idPropertyType: this.forms.value.idPropertyType, 
       idUser: Number(this.tokenService.getUserId())    
     };

@@ -10,23 +10,30 @@
           <mat-form-field appearance="outline" class="col-md-6">
             <mat-label>Nombre del Ambiente (Ej: Cocina)</mat-label>
             <input matInput formControlName="name">
+            <mat-error *ngIf="forms.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+            <mat-error *ngIf="forms.get('name')?.hasError('pattern')">Debe incluir letras; permite numeros y espacios entre 2 y 60 caracteres</mat-error>
           </mat-form-field>
           
           <mat-form-field appearance="outline" class="col-md-6">
             <mat-label>Orientaci&oacute;n (Ej: Norte / Vista a la calle)</mat-label>
             <input matInput formControlName="orientation">
+            <mat-error *ngIf="forms.get('orientation')?.hasError('pattern')">Debe incluir letras y solo permite espacios</mat-error>
           </mat-form-field>
         </div>
 
         <div class="row">
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Piso</mat-label>
-            <input matInput type="number" formControlName="floorNumber">
+            <input matInput type="text" inputmode="numeric" formControlName="floorNumber">
+            <mat-error *ngIf="forms.get('floorNumber')?.hasError('required')">El piso es obligatorio</mat-error>
+            <mat-error *ngIf="forms.get('floorNumber')?.hasError('min') || forms.get('floorNumber')?.hasError('pattern')">Solo numeros enteros desde 0</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Metros Cuadrados (m2)</mat-label>
-            <input matInput type="number" formControlName="areaSqm">
+            <input matInput type="text" inputmode="decimal" formControlName="areaSqm">
+            <mat-error *ngIf="forms.get('areaSqm')?.hasError('required')">El area es obligatoria</mat-error>
+            <mat-error *ngIf="forms.get('areaSqm')?.hasError('min') || forms.get('areaSqm')?.hasError('pattern')">Solo numeros mayores a 0</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
@@ -37,6 +44,7 @@
                 {{ v.alias }}
               </mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idHome')?.hasError('min')">Selecciona una vivienda</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
@@ -47,11 +55,12 @@
                 {{ t.value }}
               </mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idRoomType')?.hasError('min')">Selecciona un tipo de ambiente</mat-error>
           </mat-form-field>
         </div>
 
         <div class="text-center mt-3">
-          <button mat-raised-button color="primary" class="ev-glow-btn w-50 font-weight-bold" style="height: 50px; border-radius: 8px; background-color: #4f46e5; color: #fff; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" [disabled]="forms.invalid">
+          <button mat-raised-button color="primary" type="submit" class="ev-glow-btn w-50 font-weight-bold" style="height: 50px; border-radius: 8px; background-color: #4f46e5; color: #fff; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;">
             <mat-icon>add_circle</mat-icon> GUARDAR AMBIENTE
           </button>
         </div>

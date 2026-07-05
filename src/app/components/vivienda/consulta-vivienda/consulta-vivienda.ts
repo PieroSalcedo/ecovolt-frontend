@@ -36,6 +36,10 @@ export class ConsultaVivienda implements OnInit {
   idTipo: number = -1;
   tipos: any[] = [];
   viviendaActualiza: any = null;
+  textoGeneralPattern = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ0-9 ]{2,60}$/;
+  soloLetrasPattern = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ ]{2,60}$/;
+  direccionPattern = /^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ0-9 .,#°/-]{5,120}$/;
+  numeroDecimalPattern = /^[0-9]+(\.[0-9]{1,2})?$/;
 
   dataSource = new MatTableDataSource<any>();
   displayedColumns = ["id", "alias", "ciudad", "tipo", "tarifa", "area", "acciones"];
@@ -52,6 +56,12 @@ export class ConsultaVivienda implements OnInit {
   }
 
   consultar() {
+    if ((this.alias && !this.textoGeneralPattern.test(this.alias)) ||
+      (this.city && !this.soloLetrasPattern.test(this.city))) {
+      Swal.fire('Validacion', 'Revisa los filtros: alias permite letras, numeros y espacios; ciudad solo letras.', 'warning');
+      return;
+    }
+
     this.vService.consultaDinamica(this.alias, this.city, this.idTipo).subscribe(res => {
       this.dataSource.data = res.data || []; 
       this.dataSource.paginator = this.paginator;
@@ -89,11 +99,14 @@ export class ConsultaVivienda implements OnInit {
   guardarActualizacion() {
     if (!this.viviendaActualiza) return;
 
-    if (!this.viviendaActualiza.alias || !this.viviendaActualiza.city || !this.viviendaActualiza.address ||
-      Number(this.viviendaActualiza.energyTariff) < 0 ||
+    if (!this.textoGeneralPattern.test(this.viviendaActualiza.alias || '') ||
+      !this.soloLetrasPattern.test(this.viviendaActualiza.city || '') ||
+      !this.direccionPattern.test(this.viviendaActualiza.address || '') ||
+      !this.numeroDecimalPattern.test(String(this.viviendaActualiza.energyTariff || '')) ||
+      !this.numeroDecimalPattern.test(String(this.viviendaActualiza.squareMeters || '')) ||
       Number(this.viviendaActualiza.squareMeters) < 1 ||
       Number(this.viviendaActualiza.idPropertyType) < 1) {
-      Swal.fire('Validacion', 'Completa los campos permitidos correctamente.', 'warning');
+      Swal.fire('Validacion', 'Completa los campos correctamente. Evita caracteres especiales y usa solo numeros en tarifa y area.', 'warning');
       return;
     }
 
