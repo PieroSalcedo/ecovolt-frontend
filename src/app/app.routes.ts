@@ -9,6 +9,8 @@ import { RegistroCuarto } from './components/cuarto/registro-cuarto/registro-cua
 import { ConsultaCuarto } from './components/cuarto/consulta-cuarto/consulta-cuarto';
 import { ConsultaDispositivo } from './components/dispositivo/consulta-dispositivo/consulta-dispositivo';
 import { RegistroDispositivo } from './components/dispositivo/registro-dispositivo/registro-dispositivo';
+import { RegistroMeta } from './components/energia/registro-meta/registro-meta';
+import { DashboardAhorro } from './components/energia/dashboard-ahorro/dashboard-ahorro';
 
 export const routes: Routes = [
   // --- RUTA RAÍZ ---
@@ -28,6 +30,10 @@ export const routes: Routes = [
   // --- DISPOSITIVOS ---
   { path: 'dispositivo/registro', component: RegistroDispositivo },
   { path: 'dispositivo/mantenimiento', component: ConsultaDispositivo },
+
+  // --- ENERGÍA ---
+  { path: 'energia/meta', component: RegistroMeta },
+{ path: 'energia/dashboard', component: DashboardAhorro },
 
   // --- REDIRECCIONES ---
   { path: 'planes', redirectTo: '', pathMatch: 'full' },

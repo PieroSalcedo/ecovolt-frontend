@@ -39,7 +39,6 @@ export class PlanCatalogComponent implements OnInit {
           <p><b>Límite:</b> ${plan.deviceLimit} dispositivos IoT</p>
           <p><b>Ciclo:</b> ${plan.billingCycle}</p>
           <hr>
-          <p>${plan.description}</p>
         </div>
       `,
       confirmButtonText: 'Entendido',
