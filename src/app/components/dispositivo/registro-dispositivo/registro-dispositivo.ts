@@ -96,7 +96,8 @@ export class RegistroDispositivo implements OnInit {
         this.cuartos = [];
       },
       error: (err) => {
-        Swal.fire("Error", err.error?.message || "No se pudo registrar el dispositivo.", "error");
+      // El mensaje "Límite de dispositivos alcanzado..." de Java llegará aquí
+      Swal.fire("Aviso de Plan", err.error.message, "warning");
       }
     });
   }

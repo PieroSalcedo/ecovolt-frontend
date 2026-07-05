@@ -1,11 +1,10 @@
 <div class="container mt-4">
     
-    <!-- BARRA DE FILTROS TIPO ANÁLISIS ENERGÉTICO -->
+    <!-- FILTROS (MANTENEMOS TU DISEÑO) -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
         <div class="card-body bg-light rounded p-4">
             <h5 class="font-weight-bold mb-3"><mat-icon style="vertical-align: middle;">visibility</mat-icon> Monitor de Consumo Real</h5>
             <div class="row align-items-end">
-                
                 <div class="col-md-3">
                     <label class="small font-weight-bold text-muted text-uppercase">¿Qué vigilar?</label>
                     <select class="form-control" [(ngModel)]="nivel" (change)="cambioNivel()">
@@ -14,7 +13,6 @@
                         <option value="DISPOSITIVO">Dispositivo IoT</option>
                     </select>
                 </div>
-
                 <div class="col-md-3">
                     <label class="small font-weight-bold text-muted text-uppercase">Vivienda</label>
                     <select class="form-control" [(ngModel)]="idHomeSel" (change)="onCasaChange()">
@@ -22,7 +20,6 @@
                         <option *ngFor="let v of misCasas" [value]="v.idHome">{{ v.alias }}</option>
                     </select>
                 </div>
-
                 <div class="col-md-3" *ngIf="nivel !== 'CASA'">
                     <label class="small font-weight-bold text-muted text-uppercase">Ambiente</label>
                     <select class="form-control" [(ngModel)]="idRoomSel" (change)="onRoomChange()" [disabled]="idHomeSel == -1">
@@ -30,7 +27,6 @@
                         <option *ngFor="let r of misCuartos" [value]="r.idRoom">{{ r.name }}</option>
                     </select>
                 </div>
-
                 <div class="col-md-3" *ngIf="nivel === 'DISPOSITIVO'">
                     <label class="small font-weight-bold text-muted text-uppercase">Dispositivo</label>
                     <select class="form-control" [(ngModel)]="idDeviceSel" (change)="onDeviceChange()" [disabled]="idRoomSel == -1">
@@ -42,7 +38,7 @@
         </div>
     </div>
 
-    <!-- DISPLAY DE CONSUMO (SIEMPRE VISIBLE SI HAY SELECCIÓN) -->
+    <!-- PANEL DE RESULTADOS -->
     <div class="row justify-content-center" *ngIf="(idHomeSel != -1 && nivel=='CASA') || (idRoomSel != -1 && nivel=='CUARTO') || (idDeviceSel != -1 && nivel=='DISPOSITIVO')">
         <div class="col-md-10 text-center">
             <div class="card shadow-lg border-0 p-5" style="border-radius: 30px; background: white;">
@@ -54,43 +50,38 @@
                     <small class="text-muted" style="font-size: 0.4em;">kWh</small>
                 </h1>
 
-                <!-- SECCIÓN DE META (SOLO SI EXISTE) -->
-                <div *ngIf="meta; else noMeta" class="animate__animated animate__fadeIn">
+                <!-- FUNCIONALIDAD 1: PROYECCIÓN EN DINERO -->
+                <div class="mb-4" *ngIf="tarifaSeleccionada > 0">
+                    <h2 class="text-primary font-weight-bold">
+                        <mat-icon style="vertical-align: middle; font-size: 30px; width: 30px; height: 30px;">payments</mat-icon> 
+                        Costo Estimado: S/ {{ costoCalculado.toFixed(2) }}
+                    </h2>
+                    <small class="text-muted">Calculado con tarifa de S/ {{tarifaSeleccionada}} por kWh</small>
+                </div>
+
+                <div *ngIf="meta; else noMeta">
                     <p class="lead">Tu presupuesto es de <strong>{{ meta.targetValue }} kWh</strong></p>
-                    
                     <div class="progress mb-4" style="height: 50px; border-radius: 25px; background-color: #f1f1f1;">
                         <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                             role="progressbar" 
                              [style.width.%]="porcentaje > 100 ? 100 : porcentaje"
                              [ngClass]="porcentaje >= meta.alertThresholdPercentage ? 'bg-danger' : 'bg-success'">
                             <span class="h4 m-0 fw-bold">{{ porcentaje.toFixed(1) }}%</span>
                         </div>
                     </div>
-
                     <div class="alert shadow-sm" [ngClass]="porcentaje >= meta.alertThresholdPercentage ? 'alert-danger' : 'alert-success'">
-                        <mat-icon style="vertical-align: middle;">{{ porcentaje >= meta.alertThresholdPercentage ? 'warning' : 'check_circle' }}</mat-icon>
                         Umbral de Alerta: {{ meta.alertThresholdPercentage }}%
                     </div>
                 </div>
 
-                <!-- TEMPLATE CUANDO NO HAY META -->
                 <ng-template #noMeta>
-                  <div class="mt-4 p-3 bg-light rounded border text-muted" style="border-style: dashed !important;">
-                      <mat-icon style="vertical-align: middle;">info</mat-icon>
-                      No se ha establecido una meta de ahorro para este objetivo. 
-                      <!-- Cambiamos el routerLink por una función -->
-                      <a href="javascript:void(0)" (click)="irAConfigurarMeta()" class="font-weight-bold ml-1">Configurar una ahora</a>
-                  </div>
+                    <div class="mt-4 p-3 bg-light rounded border text-muted" style="border-style: dashed !important;">
+                        <mat-icon style="vertical-align: middle;">info</mat-icon>
+                        No hay meta configurada. 
+                        <a href="javascript:void(0)" (click)="irAConfigurarMeta()" class="font-weight-bold ml-1">Configurar una ahora</a>
+                    </div>
                 </ng-template>
+
             </div>
         </div>
     </div>
-
-    <!-- MENSAJE INICIAL -->
-    <div class="text-center mt-5 text-muted" *ngIf="idHomeSel == -1">
-        <mat-icon style="font-size: 80px; width: 80px; height: 80px;">manage_search</mat-icon>
-        <h4>Esperando selección...</h4>
-        <p>Selecciona un nivel y un objetivo para ver el consumo en tiempo real.</p>
-    </div>
-
 </div>

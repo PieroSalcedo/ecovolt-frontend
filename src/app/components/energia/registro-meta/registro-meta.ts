@@ -95,7 +95,7 @@ export class RegistroMeta implements OnInit {
     // Cargar lo demás...
     this.cService.consultaDinamica("", -1, -1).subscribe(res => this.misCuartos = res.data || []);
     this.dService.listarMisDispositivos().subscribe(res => this.misDispositivos = res.data || []);
-}
+  }
 
   // Al cambiar el nivel (CASA, CUARTO, DISPOSITIVO)
   cambioNivel() {

@@ -7,57 +7,55 @@
       ECOVOLT
     </a>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-label="Abrir menu">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mr-auto align-items-lg-center">
         <li class="nav-item">
-          <a class="nav-link d-flex align-items-center px-3" routerLink="/" style="border-radius: 10px; transition: all .2s ease;">
+          <a class="nav-link d-flex align-items-center px-3" routerLink="/">
             <mat-icon class="mr-1" style="font-size: 20px;">layers</mat-icon> Ver Planes
           </a>
         </li>
 
         <li class="nav-item dropdown" *ngIf="isLogged && opcRegistro.length > 0">
-          <a class="nav-link dropdown-toggle px-3" href="javascript:void(0)" data-toggle="dropdown" style="border-radius: 10px; transition: all .2s ease;">Registros</a>
-          <div class="dropdown-menu shadow border-0" style="border-radius: 10px;">
-            <a *ngFor="let aux of opcRegistro" class="dropdown-item py-2" (click)="navegar(aux.route)" style="cursor: pointer;">
-              {{ aux.name }}
-            </a>
+          <a class="nav-link dropdown-toggle px-3" href="javascript:void(0)" data-toggle="dropdown">Registros</a>
+          <div class="dropdown-menu shadow border-0">
+            <a *ngFor="let aux of opcRegistro" class="dropdown-item py-2" (click)="navegar(aux.route)">{{ aux.name }}</a>
           </div>
         </li>
 
         <li class="nav-item dropdown" *ngIf="isLogged && opcConsulta.length > 0">
-          <a class="nav-link dropdown-toggle px-3" href="javascript:void(0)" data-toggle="dropdown" style="border-radius: 10px; transition: all .2s ease;">Consultas</a>
-          <div class="dropdown-menu shadow border-0" style="border-radius: 10px;">
-            <a *ngFor="let aux of opcConsulta" class="dropdown-item py-2" (click)="navegar(aux.route)" style="cursor: pointer;">
-              {{ aux.name }}
-            </a>
+          <a class="nav-link dropdown-toggle px-3" href="javascript:void(0)" data-toggle="dropdown">Consultas</a>
+          <div class="dropdown-menu shadow border-0">
+            <a *ngFor="let aux of opcConsulta" class="dropdown-item py-2" (click)="navegar(aux.route)">{{ aux.name }}</a>
           </div>
         </li>
 
         <li class="nav-item dropdown" *ngIf="isLogged && opcCRUD.length > 0">
-          <a class="nav-link dropdown-toggle px-3" href="javascript:void(0)" data-toggle="dropdown" style="border-radius: 10px; transition: all .2s ease;">Mantenimiento</a>
-          <div class="dropdown-menu shadow border-0" style="border-radius: 10px;">
-            <a *ngFor="let aux of opcCRUD" class="dropdown-item py-2" (click)="navegar(aux.route)" style="cursor: pointer;">
-              {{ aux.name }}
-            </a>
+          <a class="nav-link dropdown-toggle px-3" href="javascript:void(0)" data-toggle="dropdown">Mantenimiento</a>
+          <div class="dropdown-menu shadow border-0">
+            <a *ngFor="let aux of opcCRUD" class="dropdown-item py-2" (click)="navegar(aux.route)">{{ aux.name }}</a>
           </div>
         </li>
       </ul>
 
       <ul class="navbar-nav ml-auto align-items-lg-center">
-        <li class="nav-item" *ngIf="!isLogged">
-          <a class="ev-glow-btn btn btn-outline-light px-4 font-weight-bold" style="border-radius: 10px; border-color: rgba(125, 211, 252, .75); color: #e0f2fe;" routerLink="/login">Iniciar Sesi&oacute;n</a>
+        <!-- MOSTRAR SOLO SI NO ESTA LOGUEADO -->
+        <li class="nav-item d-flex" *ngIf="!isLogged">
+          <a class="nav-link px-3 mr-2" routerLink="/register">Registrarse</a>
+          <a class="ev-glow-btn btn btn-outline-light px-4 font-weight-bold" style="border-radius: 10px;" routerLink="/login">Iniciar Sesión</a>
         </li>
+
+        <!-- MOSTRAR SOLO SI ESTA LOGUEADO -->
         <li class="nav-item dropdown" *ngIf="isLogged">
-          <a class="nav-link dropdown-toggle d-flex align-items-center px-3" href="javascript:void(0)" data-toggle="dropdown" style="border-radius: 10px; transition: all .2s ease;">
+          <a class="nav-link dropdown-toggle d-flex align-items-center px-3" href="javascript:void(0)" data-toggle="dropdown">
             <mat-icon class="mr-2">account_circle</mat-icon> {{ nombreUsuario }}
           </a>
-          <div class="dropdown-menu dropdown-menu-right shadow border-0" style="border-radius: 10px;">
+          <div class="dropdown-menu dropdown-menu-right shadow border-0">
             <a class="dropdown-item text-danger d-flex align-items-center py-2" (click)="onLogOut()" style="cursor:pointer">
-              <mat-icon class="mr-2" style="font-size: 18px;">power_settings_new</mat-icon> Cerrar Sesi&oacute;n
+              <mat-icon class="mr-2" style="font-size: 18px;">power_settings_new</mat-icon> Cerrar Sesión
             </a>
           </div>
         </li>

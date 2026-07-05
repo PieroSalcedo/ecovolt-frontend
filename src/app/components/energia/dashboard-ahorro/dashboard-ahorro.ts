@@ -17,7 +17,6 @@ import { Router } from '@angular/router';
   templateUrl: './dashboard-ahorro.html'
 })
 export class DashboardAhorro implements OnInit {
-  // Configuración de Filtros (Estilo Análisis)
   nivel: string = 'CASA'; 
   misCasas: any[] = [];
   misCuartos: any[] = [];
@@ -27,10 +26,13 @@ export class DashboardAhorro implements OnInit {
   idRoomSel: number = -1;
   idDeviceSel: number = -1;
 
-  // Datos de monitoreo
   meta: any = null;
   consumoActual: number = 0;
   porcentaje: number = 0;
+
+  // --- VARIABLES PARA EL COSTO EN SOLES ---
+  tarifaSeleccionada: number = 0;
+  costoCalculado: number = 0;
 
   constructor(
     private vService: ViviendaService, 
@@ -51,22 +53,18 @@ export class DashboardAhorro implements OnInit {
 
   irAConfigurarMeta() {
     this.router.navigate(['/energia/meta'], {
-        queryParams: {
-            nivel: this.nivel,
-            home: this.idHomeSel,
-            room: this.idRoomSel,
-            device: this.idDeviceSel
-        }
+        queryParams: { nivel: this.nivel, home: this.idHomeSel, room: this.idRoomSel, device: this.idDeviceSel }
     });
   }
 
-  // Al cambiar el nivel (Vivienda, Cuarto, Equipo)
   cambioNivel() {
     this.idHomeSel = -1;
     this.idRoomSel = -1;
     this.idDeviceSel = -1;
     this.meta = null;
     this.consumoActual = 0;
+    this.tarifaSeleccionada = 0;
+    this.costoCalculado = 0;
   }
 
   onCasaChange() {
@@ -75,7 +73,10 @@ export class DashboardAhorro implements OnInit {
     this.meta = null;
     this.consumoActual = 0;
 
-    // Cargar Cuartos (para cascada)
+    // 1. CAPTURAR LA TARIFA DE LA CASA SELECCIONADA
+    const casa = this.misCasas.find(c => c.idHome == this.idHomeSel);
+    this.tarifaSeleccionada = casa ? casa.energyTariff : 0;
+
     this.cService.consultaDinamica("", this.idHomeSel, -1).subscribe(res => {
         this.misCuartos = res.data || [];
         if (this.nivel === 'CASA' && this.idHomeSel != -1) {
@@ -90,7 +91,6 @@ export class DashboardAhorro implements OnInit {
     this.meta = null;
     this.consumoActual = 0;
 
-    // Cargar Dispositivos (para cascada)
     this.dService.consultaDinamica(this.idHomeSel, this.idRoomSel, "").subscribe(res => {
         this.misDispositivos = res.data || [];
         if (this.nivel === 'CUARTO' && this.idRoomSel != -1) {
@@ -107,7 +107,6 @@ export class DashboardAhorro implements OnInit {
   }
 
   cargarDatosFinales(tipo: string, id: number) {
-    // 1. SIEMPRE OBTENER CONSUMO REAL
     let obsConsumo;
     if(tipo === 'CASA') obsConsumo = this.rService.getConsumoCasa(id);
     else if(tipo === 'CUARTO') obsConsumo = this.rService.getConsumoCuarto(id);
@@ -116,7 +115,9 @@ export class DashboardAhorro implements OnInit {
     obsConsumo.subscribe(resCons => {
       this.consumoActual = resCons.data || 0;
 
-      // 2. BUSCAR META (SI EXISTE)
+      // 2. CALCULAR EL COSTO (Consumo * Tarifa)
+      this.costoCalculado = this.consumoActual * this.tarifaSeleccionada;
+
       this.gService.obtenerMetaActiva(tipo, id).subscribe({
         next: (resMeta) => {
           this.meta = resMeta.data;
@@ -128,7 +129,6 @@ export class DashboardAhorro implements OnInit {
           this.cd.detectChanges();
         },
         error: () => {
-          // Si no hay meta, no es error, solo informamos a la vista
           this.meta = null;
           this.porcentaje = 0;
           this.cd.detectChanges();

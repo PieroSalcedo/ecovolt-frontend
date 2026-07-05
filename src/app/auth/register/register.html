@@ -1,0 +1,35 @@
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+  <mat-card class="p-4 shadow-lg border-0" style="width: 450px; border-radius: 20px;">
+    <mat-card-header class="justify-content-center mb-3">
+      <mat-card-title><h2 class="text-primary fw-bold">Nueva Cuenta</h2></mat-card-title>
+    </mat-card-header>
+    <form [formGroup]="form" (ngSubmit)="onRegister()">
+      <div class="row">
+        <mat-form-field class="col-6" appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="firstName">
+        </mat-form-field>
+        <mat-form-field class="col-6" appearance="outline">
+          <mat-label>Apellido</mat-label>
+          <input matInput formControlName="lastName">
+        </mat-form-field>
+      </div>
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email">
+      </mat-form-field>
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Usuario</mat-label>
+        <input matInput formControlName="login">
+      </mat-form-field>
+      <mat-form-field class="w-100" appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password">
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="w-100 py-3 mt-2" style="border-radius: 12px;" [disabled]="form.invalid">CREAR CUENTA</button>
+      <div class="text-center mt-3">
+        <a routerLink="/login" class="text-muted small">¿Ya tienes cuenta? Ingresa aquí</a>
+      </div>
+    </form>
+  </mat-card>
+</div>

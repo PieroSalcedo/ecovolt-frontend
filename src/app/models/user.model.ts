@@ -1,5 +1,9 @@
 export class User {
     idUser?: number;
     login?: string;
-    fullName?: string;
+    password?: string; // Solo para el envío
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    status?: number;
 }
