@@ -1,11 +1,14 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ViviendaService } from '../../../services/vivienda';
+import { CuartoService } from '../../../services/cuarto';
+import { DispositivoService } from '../../../services/dispositivo';
 import { GoalService } from '../../../services/goal';
 import { ReadingService } from '../../../services/reading';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard-ahorro',
@@ -14,72 +17,123 @@ import Swal from 'sweetalert2';
   templateUrl: './dashboard-ahorro.html'
 })
 export class DashboardAhorro implements OnInit {
-  // Datos del combo
+  // Configuración de Filtros (Estilo Análisis)
+  nivel: string = 'CASA'; 
   misCasas: any[] = [];
-  casaSel: number = -1;
+  misCuartos: any[] = [];
+  misDispositivos: any[] = [];
 
-  // Datos de la analítica
-  consumoActual: number = 0;
+  idHomeSel: number = -1;
+  idRoomSel: number = -1;
+  idDeviceSel: number = -1;
+
+  // Datos de monitoreo
   meta: any = null;
+  consumoActual: number = 0;
   porcentaje: number = 0;
 
   constructor(
     private vService: ViviendaService, 
-    private gService: GoalService, 
+    private cService: CuartoService,
+    private dService: DispositivoService,
+    private gService: GoalService,
     private rService: ReadingService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit() {
-    // Cargamos todas las viviendas de Alonso al iniciar
     this.vService.consultaDinamica("", "", -1).subscribe(res => {
-      this.misCasas = res.data || [];
-      console.log("Casas cargadas:", this.misCasas);
-      this.cd.detectChanges();
+        this.misCasas = res.data || [];
+        this.cd.detectChanges();
     });
   }
 
-  actualizarDatos() {
-    // Si no selecciona nada, limpiamos la pantalla
-    if(this.casaSel == -1) {
-      this.meta = null;
-      this.consumoActual = 0;
-      return;
+  irAConfigurarMeta() {
+    this.router.navigate(['/energia/meta'], {
+        queryParams: {
+            nivel: this.nivel,
+            home: this.idHomeSel,
+            room: this.idRoomSel,
+            device: this.idDeviceSel
+        }
+    });
+  }
+
+  // Al cambiar el nivel (Vivienda, Cuarto, Equipo)
+  cambioNivel() {
+    this.idHomeSel = -1;
+    this.idRoomSel = -1;
+    this.idDeviceSel = -1;
+    this.meta = null;
+    this.consumoActual = 0;
+  }
+
+  onCasaChange() {
+    this.idRoomSel = -1;
+    this.idDeviceSel = -1;
+    this.meta = null;
+    this.consumoActual = 0;
+
+    // Cargar Cuartos (para cascada)
+    this.cService.consultaDinamica("", this.idHomeSel, -1).subscribe(res => {
+        this.misCuartos = res.data || [];
+        if (this.nivel === 'CASA' && this.idHomeSel != -1) {
+            this.cargarDatosFinales('CASA', this.idHomeSel);
+        }
+        this.cd.detectChanges();
+    });
+  }
+
+  onRoomChange() {
+    this.idDeviceSel = -1;
+    this.meta = null;
+    this.consumoActual = 0;
+
+    // Cargar Dispositivos (para cascada)
+    this.dService.consultaDinamica(this.idHomeSel, this.idRoomSel, "").subscribe(res => {
+        this.misDispositivos = res.data || [];
+        if (this.nivel === 'CUARTO' && this.idRoomSel != -1) {
+            this.cargarDatosFinales('CUARTO', this.idRoomSel);
+        }
+        this.cd.detectChanges();
+    });
+  }
+
+  onDeviceChange() {
+    if (this.nivel === 'DISPOSITIVO' && this.idDeviceSel != -1) {
+        this.cargarDatosFinales('DISPOSITIVO', this.idDeviceSel);
     }
+  }
 
-    // 1. Buscamos la Meta activa para la casa seleccionada
-    this.gService.listarActivasPorVivienda(this.casaSel).subscribe(resMeta => {
-      if(resMeta.data && resMeta.data.length > 0) {
-        this.meta = resMeta.data[0];
+  cargarDatosFinales(tipo: string, id: number) {
+    // 1. SIEMPRE OBTENER CONSUMO REAL
+    let obsConsumo;
+    if(tipo === 'CASA') obsConsumo = this.rService.getConsumoCasa(id);
+    else if(tipo === 'CUARTO') obsConsumo = this.rService.getConsumoCuarto(id);
+    else obsConsumo = this.rService.getConsumoDispositivo(id);
 
-        // 2. Calculamos fechas del mes actual (Día 1 hasta hoy) para el reporte
-        const hoy = new Date();
-        const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString();
-        const finHoy = hoy.toISOString();
+    obsConsumo.subscribe(resCons => {
+      this.consumoActual = resCons.data || 0;
 
-        // 3. Pedimos al backend el consumo total acumulado en ese rango
-        this.rService.getConsumoTotal(this.casaSel, inicioMes, finHoy).subscribe(resCons => {
-          this.consumoActual = resCons.data || 0;
-
-          // 4. Calculamos el porcentaje de gasto (consumo / límite * 100)
-          // El campo targetValue es el que trae el valor de monthlyLimitKwh del DTO
+      // 2. BUSCAR META (SI EXISTE)
+      this.gService.obtenerMetaActiva(tipo, id).subscribe({
+        next: (resMeta) => {
+          this.meta = resMeta.data;
           this.porcentaje = (this.consumoActual / this.meta.targetValue) * 100;
-
-          // Alerta si supera el umbral configurado por Alonso
-          if(this.porcentaje >= (this.meta.alertThresholdPercentage || 80)) {
-            Swal.fire({
-              title: '¡ALERTA ECOVOLT!',
-              text: `Has superado el ${this.meta.alertThresholdPercentage}% de tu meta mensual.`,
-              icon: 'warning',
-              confirmButtonColor: '#d33'
-            });
+          
+          if (this.porcentaje >= this.meta.alertThresholdPercentage) {
+            Swal.fire({ title: '¡ALERTA!', text: 'Consumo crítico detectado', icon: 'warning', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false });
           }
           this.cd.detectChanges();
-        });
-      } else {
-        this.meta = null;
-        Swal.fire("Sin Meta", "Aún no has definido un presupuesto energético para esta casa.", "info");
-      }
+        },
+        error: () => {
+          // Si no hay meta, no es error, solo informamos a la vista
+          this.meta = null;
+          this.porcentaje = 0;
+          this.cd.detectChanges();
+        }
+      });
     });
   }
 }

@@ -1,8 +1,11 @@
 export class Meta {
     idGoal?: number;
-    targetValue?: number; // Este mapea a monthlyLimitKwh en el backend
+    monthlyLimitKwh?: number;
     alertThresholdPercentage?: number;
     idHome?: number;
-    homeAddress?: string;
+    idRoom?: number;
+    idDevice?: number;
+    targetName?: string; // Nombre del objetivo (Casa, Cuarto o Equipo)
+    type?: string;       // 'CASA', 'CUARTO', 'DISPOSITIVO'
     status?: number;
 }

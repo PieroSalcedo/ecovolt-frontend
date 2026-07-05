@@ -17,7 +17,7 @@ export class DispositivoService {
   }
 
   listarMisDispositivos(): Observable<ApiResponseDto<Dispositivo[]>> {
-    // URL limpia sin parámetros extra
+    // Sin parámetros, limpio.
     return this.http.get<ApiResponseDto<Dispositivo[]>>(`${baseUrl}/mis-dispositivos`);
   }
 

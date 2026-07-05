@@ -1,59 +1,77 @@
 <div class="container mt-4 mb-5">
-  <mat-toolbar color="primary" class="rounded shadow mb-4">
-    <span>📊 Inteligencia Energética: Dashboard Maestro</span>
-  </mat-toolbar>
+    <!-- Encabezado con Estilo -->
+    <mat-toolbar color="primary" class="rounded shadow mb-4">
+        <span class="d-flex align-items-center">
+            <mat-icon class="mr-2">analytics</mat-icon> 
+            Análisis Energético Inteligente
+        </span>
+    </mat-toolbar>
 
-  <div class="row">
-    <!-- NIVEL 1: COMPARATIVA GLOBAL -->
-    <div class="col-12 mb-4">
-      <mat-card class="p-4 shadow-sm border-0">
-        <mat-card-title class="text-success mb-3">1. Consumo por Vivienda (Watts)</mat-card-title>
-        <div style="height: 300px;">
-          <canvas baseChart [data]="barData" [type]="'bar'"></canvas>
+    <!-- BARRA DE FILTROS DINÁMICA -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
+        <div class="card-body bg-light rounded">
+            <div class="row align-items-center">
+                
+                <!-- 1. Selección de Nivel -->
+                <div class="col-md-3">
+                    <label class="small font-weight-bold text-muted">¿Qué quieres analizar?</label>
+                    <select class="form-control" [(ngModel)]="nivel" (change)="cambiarNivel()">
+                        <option value="VIVIENDA">Todas mis Viviendas</option>
+                        <option value="CUARTO">Ambientes de una Casa</option>
+                        <option value="DISPOSITIVO">Equipos de un Cuarto</option>
+                    </select>
+                </div>
+
+                <!-- 2. Combo de Casas (Solo si nivel es Cuarto o Dispositivo) -->
+                <div class="col-md-3" *ngIf="nivel !== 'VIVIENDA'">
+                    <label class="small font-weight-bold text-muted">Seleccionar Casa:</label>
+                    <select class="form-control" [(ngModel)]="idHomeSel" (change)="onCasaChange()">
+                        <option [value]="-1">-- Elige Propiedad --</option>
+                        <option *ngFor="let c of misCasas" [value]="c.idHome">{{c.alias}}</option>
+                    </select>
+                </div>
+
+                <!-- 3. Combo de Cuartos (Solo si nivel es Dispositivo) -->
+                <div class="col-md-3" *ngIf="nivel === 'DISPOSITIVO'">
+                    <label class="small font-weight-bold text-muted">Seleccionar Cuarto:</label>
+                    <select class="form-control" [(ngModel)]="idRoomSel" (change)="onRoomChange()" [disabled]="idHomeSel == -1">
+                        <option [value]="-1">-- Elige Ambiente --</option>
+                        <option *ngFor="let r of misCuartos" [value]="r.idRoom">{{r.name}}</option>
+                    </select>
+                </div>
+
+                <div class="col text-right" *ngIf="nivel === 'VIVIENDA'">
+                    <span class="badge badge-success p-2">Mostrando Resumen Global</span>
+                </div>
+            </div>
         </div>
-      </mat-card>
     </div>
 
-    <!-- NIVEL 2: DISTRIBUCIÓN POR CUARTOS -->
-    <div class="col-md-6">
-      <mat-card class="p-4 shadow-sm border-0" style="min-height: 500px;">
-        <mat-card-title class="text-primary">2. Reparto por Ambientes</mat-card-title>
-        
-        <label class="mt-3">Selecciona una Vivienda:</label>
-        <select class="form-control mb-4" [(ngModel)]="idHomeSel" (change)="onCasaChange()">
-          <option [value]="-1">-- Ver detalle de una casa --</option>
-          <option *ngFor="let c of misCasas" [value]="c.idHome">{{c.alias}}</option>
-        </select>
+    <!-- ÁREA DEL GRÁFICO ÚNICO -->
+    <div class="row">
+        <div class="col-12">
+            <mat-card class="border-0 shadow-lg p-4" style="border-radius: 20px; min-height: 500px;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="m-0 text-dark font-weight-bold">
+                        {{ mainChartData.datasets[0].label }}
+                    </h2>
+                    <mat-icon class="text-secondary">bar_chart</mat-icon>
+                </div>
 
-        <div style="height: 300px;" *ngIf="idHomeSel != -1">
-          <canvas baseChart [data]="pieData" [type]="'pie'"></canvas>
+                <!-- Canvas del gráfico -->
+                <div style="position: relative; height: 400px; width: 100%;">
+                    <canvas baseChart 
+                        [data]="mainChartData" 
+                        [options]="mainChartOptions" 
+                        [type]="'bar'">
+                    </canvas>
+                </div>
+
+                <!-- Mensaje cuando no hay selección -->
+                <div class="text-center mt-4 text-muted" *ngIf="mainChartData.labels?.length === 0">
+                    <p>Por favor, completa los filtros superiores para visualizar los datos.</p>
+                </div>
+            </mat-card>
         </div>
-        <div class="text-center mt-5 text-muted" *ngIf="idHomeSel == -1">
-          <mat-icon style="font-size: 50px; width:50px; height:50px;">apartment</mat-icon>
-          <p>Elige una casa para ver sus cuartos.</p>
-        </div>
-      </mat-card>
     </div>
-
-    <!-- NIVEL 3: DETALLE POR DISPOSITIVO -->
-    <div class="col-md-6">
-      <mat-card class="p-4 shadow-sm border-0" style="min-height: 500px;">
-        <mat-card-title class="text-danger">3. Gasto por Dispositivo</mat-card-title>
-
-        <label class="mt-3">Selecciona un Cuarto:</label>
-        <select class="form-control mb-4" [(ngModel)]="idRoomSel" (change)="onRoomChange()" [disabled]="idHomeSel == -1">
-          <option [value]="-1">-- Ver equipos de un cuarto --</option>
-          <option *ngFor="let r of misCuartos" [value]="r.idRoom">{{r.name}}</option>
-        </select>
-
-        <div style="height: 300px;" *ngIf="idRoomSel != -1">
-          <canvas baseChart [data]="deviceData" [type]="'bar'"></canvas>
-        </div>
-        <div class="text-center mt-5 text-muted" *ngIf="idRoomSel == -1">
-          <mat-icon style="font-size: 50px; width:50px; height:50px;">settings_remote</mat-icon>
-          <p>Elige un cuarto para ver sus dispositivos.</p>
-        </div>
-      </mat-card>
-    </div>
-  </div>
 </div>

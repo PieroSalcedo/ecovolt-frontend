@@ -5,7 +5,6 @@ import { AppSettings } from '../app.settings';
 import { ApiResponseDto } from '../models/api-response.model';
 import { ReporteCasa, ReporteCuarto, ReporteDispositivo } from '../models/reporte.model';
 
-// Definimos la base URL para lecturas
 const baseUrl = AppSettings.API_ENDPOINT + '/energy-readings';
 
 @Injectable({ providedIn: 'root' })
@@ -13,12 +12,25 @@ export class ReadingService {
 
   constructor(private http: HttpClient) { }
 
-  // === ESTE ES EL MÉTODO QUE TE FALTABA PARA EL SIMULADOR ===
+  // SIMULADOR: Ingesta de datos
   registrarLectura(obj: any): Observable<ApiResponseDto<any>> {
     return this.http.post<ApiResponseDto<any>>(baseUrl, obj);
   }
 
-  // Los métodos de reporte que ya agregamos antes
+  // CONSUMO TOTAL POR NIVELES (Lo que hicimos en Java)
+  getConsumoCasa(id: number): Observable<ApiResponseDto<number>> {
+    return this.http.get<ApiResponseDto<number>>(`${baseUrl}/total/home/${id}`);
+  }
+
+  getConsumoCuarto(id: number): Observable<ApiResponseDto<number>> {
+    return this.http.get<ApiResponseDto<number>>(`${baseUrl}/total/room/${id}`);
+  }
+
+  getConsumoDispositivo(id: number): Observable<ApiResponseDto<number>> {
+    return this.http.get<ApiResponseDto<number>>(`${baseUrl}/total/device/${id}`);
+  }
+
+  // REPORTES PARA GRÁFICOS
   reporteCasas(): Observable<ReporteCasa[]> {
     return this.http.get<ReporteCasa[]>(`${baseUrl}/reporte/casas`);
   }
@@ -29,11 +41,5 @@ export class ReadingService {
 
   reporteDispositivos(idRoom: number): Observable<ReporteDispositivo[]> {
     return this.http.get<ReporteDispositivo[]>(`${baseUrl}/reporte/dispositivos/${idRoom}`);
-  }
-
-  // Método para el consumo total del mes
-  getConsumoTotal(idHome: number, start: string, end: string): Observable<ApiResponseDto<number>> {
-    const params = new HttpParams().set('start', start).set('end', end);
-    return this.http.get<ApiResponseDto<number>>(`${baseUrl}/home/${idHome}/total`, { params });
   }
 }

@@ -15,11 +15,17 @@ export class GoalService {
     return this.http.post<ApiResponseDto<Meta>>(this.baseUrl, obj);
   }
 
-  listarActivasPorVivienda(idHome: number): Observable<ApiResponseDto<Meta[]>> {
-    return this.http.get<ApiResponseDto<Meta[]>>(`${this.baseUrl}/home/${idHome}/active`);
+  // Lista metas según el nivel y el ID
+  listarActiva(tipo: string, id: number): Observable<ApiResponseDto<Meta[]>> {
+    // Usamos el endpoint del backend que filtra por casa/cuarto/dispositivo
+    return this.http.get<ApiResponseDto<Meta[]>>(`${this.baseUrl}/active?type=${tipo}&id=${id}`);
   }
 
   eliminar(id: number): Observable<ApiResponseDto<void>> {
     return this.http.delete<ApiResponseDto<void>>(`${this.baseUrl}/${id}`);
+  }
+
+  obtenerMetaActiva(type: string, id: number): Observable<ApiResponseDto<Meta>> {
+    return this.http.get<ApiResponseDto<Meta>>(`${this.baseUrl}/active-by-type?type=${type}&id=${id}`);
   }
 }
