@@ -8,4 +8,5 @@ export class JwtDTO {
     fullName?: string;
     roles?: string[];
     opciones?: Option[];
+    idPlan?: number; 
 }

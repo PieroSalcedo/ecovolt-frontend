@@ -68,4 +68,12 @@ export class TokenService {
   public logOut(): void {
     sessionStorage.clear();
   }
+
+  public setPlanId(id: string): void {
+    sessionStorage.setItem('AuthPlanId', id);
+}
+
+  public getPlanId(): string | null {
+      return sessionStorage.getItem('AuthPlanId');
+  }
 }

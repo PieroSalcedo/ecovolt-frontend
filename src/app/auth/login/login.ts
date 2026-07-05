@@ -9,7 +9,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MenuComponent } from '../../menu/menu';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -31,12 +30,18 @@ export class LoginComponent {
   this.authService.login(this.loginUsuario).subscribe({
     next: (res) => {
       if (res.data) {
+        // Guardamos los datos básicos
         this.tokenService.setToken(res.data.token!);
         this.tokenService.setUserName(res.data.login!);
         this.tokenService.setUserNameComplete(res.data.fullName!);
         this.tokenService.setAuthorities(res.data.roles!);
         this.tokenService.setOpciones(res.data.opciones!);
         this.tokenService.setUserId(res.data.idUser.toString());
+        
+        // SEGURIDAD: Solo guardamos el Plan si el backend lo envió
+        if (res.data.idPlan) {
+          this.tokenService.setPlanId(res.data.idPlan.toString());
+        }
 
         Swal.fire({
           title: res.title,
@@ -45,7 +50,7 @@ export class LoginComponent {
           timer: 1500,
           showConfirmButton: false
         }).then(() => {
-          // CAMBIO CLAVE: Usamos href para que el MenuComponent se refresque
+          // Usamos href para forzar la recarga del menú con los nuevos permisos
           window.location.href = '/'; 
         });
       }

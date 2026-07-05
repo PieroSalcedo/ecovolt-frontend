@@ -1,50 +1,75 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // <--- 1. IMPORTAR ESTO
 import { PlanService } from '../../services/plan';
-import { Plan } from '../../models/plan.model';
-import { CommonModule } from '@angular/common';
+import { TokenService } from '../../security/token';
+import { UserService } from '../../services/user';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon'; 
+import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-plan-catalog',
   standalone: true,
   imports: [
-    CommonModule, 
-    MatCardModule, 
-    MatButtonModule, 
+    CommonModule, // <--- 2. AGREGAR AQUÍ (Fundamental para *ngFor y *ngIf)
+    MatCardModule,
+    MatButtonModule,
     MatIconModule
   ],
   templateUrl: './plan-catalog.html',
   styleUrls: ['./plan-catalog.css']
 })
 export class PlanCatalogComponent implements OnInit {
-  planes: Plan[] = [];
+  planes: any[] = [];
+  isLogged = false;
+  idPlanActual: number = 0;
 
-  constructor(private planService: PlanService) { }
+  constructor(
+    private planService: PlanService, 
+    public tokenService: TokenService, // Debe ser public para el HTML
+    private userService: UserService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    this.planService.listaPlanes().subscribe(res => {
-      this.planes = res.data || [];
+    this.isLogged = !!this.tokenService.getToken();
+    
+    // Leemos el plan del token service
+    const planGuardado = this.tokenService.getPlanId();
+    this.idPlanActual = planGuardado ? Number(planGuardado) : 0;
+
+    this.planService.listaPlanes().subscribe({
+      next: (res) => {
+        this.planes = res.data || [];
+      },
+      error: (err) => console.error("Error cargando planes", err)
     });
   }
 
-  verDetalle(plan: Plan) {
-    Swal.fire({
-      title: `<span style="color: #4f46e5">${plan.name}</span>`,
-      html: `
-        <div class="text-left">
-          <p><b>Costo:</b> S/ ${plan.monthlyPrice}</p>
-          <p><b>Límite:</b> ${plan.deviceLimit} dispositivos IoT</p>
-          <p><b>Ciclo:</b> ${plan.billingCycle}</p>
-          <hr>
-        </div>
-      `,
-      confirmButtonText: 'Entendido',
-      confirmButtonColor: '#4f46e5',
-      iconColor: '#0891b2',
-      icon: 'info'
-    });
+  ejecutarAccion(idPlan: number) {
+    if (!this.isLogged) {
+      this.router.navigate(['/register'], { queryParams: { plan: idPlan } });
+    } else {
+      if (idPlan === this.idPlanActual) return;
+
+      Swal.fire({
+        title: '¿Cambiar de plan?',
+        text: "Se actualizarán tus beneficios al instante.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#1b4332',
+        confirmButtonText: 'Sí, actualizar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.userService.upgradePlan(idPlan).subscribe(res => {
+            Swal.fire('¡Éxito!', res.message, 'success');
+            this.tokenService.setPlanId(idPlan.toString());
+            this.idPlanActual = idPlan;
+          });
+        }
+      });
+    }
   }
 }

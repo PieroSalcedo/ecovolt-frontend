@@ -1,35 +1,58 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh;">
-  <mat-card class="p-4 shadow-lg border-0" style="width: 450px; border-radius: 20px;">
-    <mat-card-header class="justify-content-center mb-3">
-      <mat-card-title><h2 class="text-primary fw-bold">Nueva Cuenta</h2></mat-card-title>
-    </mat-card-header>
-    <form [formGroup]="form" (ngSubmit)="onRegister()">
-      <div class="row">
-        <mat-form-field class="col-6" appearance="outline">
-          <mat-label>Nombre</mat-label>
-          <input matInput formControlName="firstName">
-        </mat-form-field>
-        <mat-form-field class="col-6" appearance="outline">
-          <mat-label>Apellido</mat-label>
-          <input matInput formControlName="lastName">
-        </mat-form-field>
-      </div>
-      <mat-form-field class="w-100" appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email">
-      </mat-form-field>
-      <mat-form-field class="w-100" appearance="outline">
-        <mat-label>Usuario</mat-label>
-        <input matInput formControlName="login">
-      </mat-form-field>
-      <mat-form-field class="w-100" appearance="outline">
-        <mat-label>Contraseña</mat-label>
-        <input matInput type="password" formControlName="password">
-      </mat-form-field>
-      <button mat-raised-button color="primary" class="w-100 py-3 mt-2" style="border-radius: 12px;" [disabled]="form.invalid">CREAR CUENTA</button>
-      <div class="text-center mt-3">
-        <a routerLink="/login" class="text-muted small">¿Ya tienes cuenta? Ingresa aquí</a>
-      </div>
-    </form>
-  </mat-card>
+    <mat-card class="p-4 shadow-lg border-0" style="width: 450px; border-radius: 20px;">
+        <mat-card-header class="justify-content-center mb-3">
+            <mat-card-title>
+                <h2 class="text-primary fw-bold m-0">Únete a Ecovolt</h2>
+            </mat-card-title>
+        </mat-card-header>
+
+        <!-- BADGE DINÁMICO DEL PLAN ELEGIDO -->
+        <div class="alert alert-info py-2 text-center d-flex align-items-center justify-content-center" 
+             style="border-radius: 12px; background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1;">
+            <mat-icon class="mr-2">stars</mat-icon>
+            <span>Seleccionaste: <strong>{{ getNombrePlan() }}</strong></span>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onRegister()" class="mt-3">
+            <div class="row">
+                <mat-form-field class="col-6" appearance="outline">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput formControlName="firstName">
+                </mat-form-field>
+                <mat-form-field class="col-6" appearance="outline">
+                    <mat-label>Apellido</mat-label>
+                    <input matInput formControlName="lastName">
+                </mat-form-field>
+            </div>
+
+            <mat-form-field class="w-100" appearance="outline">
+                <mat-label>Correo Electrónico</mat-label>
+                <input matInput type="email" formControlName="email">
+                <mat-icon matSuffix>email</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="w-100" appearance="outline">
+                <mat-label>Usuario (Login)</mat-label>
+                <input matInput formControlName="login">
+                <mat-icon matSuffix>person</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field class="w-100" appearance="outline">
+                <mat-label>Contraseña</mat-label>
+                <input matInput type="password" formControlName="password">
+                <mat-icon matSuffix>lock</mat-icon>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" class="w-100 py-3 mt-2 font-weight-bold" 
+                    style="border-radius: 12px; background-color: #1b4332;" [disabled]="form.invalid">
+                CONFIRMAR Y REGISTRAR
+            </button>
+
+            <div class="text-center mt-4">
+                <a routerLink="/login" class="text-muted small text-decoration-none">
+                    ¿Ya tienes cuenta? <span class="text-primary font-weight-bold">Ingresa aquí</span>
+                </a>
+            </div>
+        </form>
+    </mat-card>
 </div>
