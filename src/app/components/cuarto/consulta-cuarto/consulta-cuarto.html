@@ -1,30 +1,91 @@
-<div class="container mt-4">
-  <!-- BARRA DE BÚSQUEDA DINÁMICA -->
-  <div class="row mb-3 align-items-center p-3 border rounded bg-white shadow-sm mx-1">
-    <div class="col-md-3">
-        <input class="form-control" placeholder="Nombre (Ej: Sala)" [(ngModel)]="nombre" (keyup.enter)="consultar()">
+<div class="container mt-4 mb-5">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-3">
+    <div>
+      <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem;">Mantenimiento</span>
+      <h3 class="font-weight-bold mb-0" style="color: #0f172a;">Ambientes por vivienda</h3>
     </div>
-    <div class="col-md-3">
-      <select class="form-control" [(ngModel)]="idHome">
+    <span class="badge px-3 py-2 mt-3 mt-md-0" style="color: #0f172a; background: #e0e7ff; border-radius: 8px;">Habitaciones y zonas</span>
+  </div>
+
+  <div class="row mb-3 align-items-center p-3 border bg-white shadow-sm mx-1" style="border-radius: 8px;">
+    <div class="col-md-3 mb-2 mb-md-0">
+        <input class="form-control" placeholder="Nombre (Ej: Sala)" [(ngModel)]="nombre" (keyup.enter)="consultar()" style="border-radius: 8px;">
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+      <select class="form-control" [(ngModel)]="idHome" style="border-radius: 8px;">
         <option [value]="-1">-- Todas mis casas --</option>
         <option *ngFor="let v of viviendas" [value]="v.idHome">{{ v.alias }}</option>
       </select>
     </div>
-    <div class="col-md-3">
-      <select class="form-control" [(ngModel)]="idTipo">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <select class="form-control" [(ngModel)]="idTipo" style="border-radius: 8px;">
         <option [value]="-1">-- Todos los tipos --</option>
         <option *ngFor="let t of tipos" [value]="t.idDataCatalog">{{ t.value }}</option>
       </select>
     </div>
     <div class="col-md-3">
-        <button class="btn btn-primary w-100" (click)="consultar()">
+        <button class="ev-glow-btn btn btn-primary w-100 font-weight-bold" style="background-color: #4f46e5; border-color: #4f46e5; color: #fff; border-radius: 8px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" (click)="consultar()">
             <mat-icon style="font-size: 18px; vertical-align: middle;">search</mat-icon> FILTRAR
         </button>
     </div>
   </div>
 
-  <!-- TABLA DE RESULTADOS (Estilo profesor con iconos) -->
-  <div class="mat-elevation-z2 rounded overflow-hidden">
+  <div *ngIf="cuartoActualiza" class="card shadow-sm border-0 mb-3" style="border-radius: 12px; overflow: hidden;">
+    <div class="card-header text-white d-flex justify-content-between align-items-center p-3" style="background: linear-gradient(90deg, #0f172a, #4f46e5);">
+      <h5 class="mb-0 font-weight-bold"><mat-icon style="vertical-align: middle;">edit</mat-icon> Actualizar ambiente</h5>
+      <button mat-icon-button class="ev-icon-danger" type="button" (click)="cancelarActualizacion()" style="background: rgba(255,255,255,.12); color: #fff;">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="card-body p-4">
+      <div class="row">
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Nombre del ambiente</mat-label>
+          <input matInput [(ngModel)]="cuartoActualiza.name">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Orientacion</mat-label>
+          <input matInput [(ngModel)]="cuartoActualiza.orientation">
+        </mat-form-field>
+      </div>
+
+      <div class="row align-items-start">
+        <mat-form-field appearance="outline" class="col-md-3">
+          <mat-label>Piso</mat-label>
+          <input matInput type="number" [(ngModel)]="cuartoActualiza.floorNumber">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-3">
+          <mat-label>Area (m2)</mat-label>
+          <input matInput type="number" [(ngModel)]="cuartoActualiza.areaSqm">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-3">
+          <mat-label>Vivienda</mat-label>
+          <mat-select [(ngModel)]="cuartoActualiza.idHome">
+            <mat-option [value]="-1">-- Seleccione --</mat-option>
+            <mat-option *ngFor="let v of viviendas" [value]="v.idHome">{{ v.alias }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-3">
+          <mat-label>Tipo</mat-label>
+          <mat-select [(ngModel)]="cuartoActualiza.idRoomType">
+            <mat-option [value]="-1">-- Seleccione --</mat-option>
+            <mat-option *ngFor="let t of tipos" [value]="t.idDataCatalog">{{ t.value }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button mat-stroked-button type="button" class="mr-2" (click)="cancelarActualizacion()" style="border-radius: 8px;">
+          CANCELAR
+        </button>
+        <button mat-raised-button color="primary" class="ev-glow-btn font-weight-bold px-4" style="background-color: #4f46e5; color: #fff; border-radius: 8px;" (click)="guardarActualizacion()">
+          GUARDAR CAMBIOS
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev-table-shell mat-elevation-z2 bg-white border shadow-sm" style="border-radius: 8px; overflow: hidden;">
     <table mat-table [dataSource]="dataSource" class="w-100">
       
       <ng-container matColumnDef="id">
@@ -38,7 +99,7 @@
       </ng-container>
 
       <ng-container matColumnDef="casa">
-        <th mat-header-cell *matHeaderCellDef> Ubicación (Casa) </th>
+        <th mat-header-cell *matHeaderCellDef> Ubicacion (Casa) </th>
         <td mat-cell *matCellDef="let x"> {{x.homeAddress}} </td>
       </ng-container>
 
@@ -49,21 +110,21 @@
 
       <ng-container matColumnDef="piso">
         <th mat-header-cell *matHeaderCellDef> Piso </th>
-        <td mat-cell *matCellDef="let x"> {{x.floorNumber}}° </td>
+        <td mat-cell *matCellDef="let x"> {{x.floorNumber}} </td>
       </ng-container>
 
       <ng-container matColumnDef="area">
-        <th mat-header-cell *matHeaderCellDef> Área </th>
+        <th mat-header-cell *matHeaderCellDef> Area </th>
         <td mat-cell *matCellDef="let x"> {{x.areaSqm}} m2 </td>
       </ng-container>
       
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Acciones </th>
         <td mat-cell *matCellDef="let x" style="text-align: center;">
-          <button mat-icon-button color="primary" (click)="actualizar(x)">
+          <button mat-icon-button color="primary" class="ev-icon-action" (click)="actualizar(x)" style="background: #e0e7ff; margin-right: 6px;" title="Editar ambiente">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="eliminar(x.idRoom, x.name)">
+          <button mat-icon-button color="warn" class="ev-icon-danger" (click)="eliminar(x.idRoom, x.name)" style="background: #fff1f1;" title="Eliminar ambiente">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

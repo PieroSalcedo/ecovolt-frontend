@@ -1,2 +1,61 @@
+<style>
+  .ev-glow-btn {
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease !important;
+  }
+
+  .ev-glow-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: saturate(1.1);
+    box-shadow:
+      0 0 0 4px rgba(125, 211, 252, .24),
+      0 0 28px rgba(79, 70, 229, .42),
+      0 14px 32px rgba(8, 145, 178, .24) !important;
+  }
+
+  .ev-glow-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .ev-icon-action,
+  .ev-icon-danger {
+    transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease !important;
+  }
+
+  .ev-icon-action:hover {
+    transform: translateY(-2px) scale(1.06);
+    box-shadow:
+      0 0 0 5px rgba(129, 140, 248, .18),
+      0 0 22px rgba(79, 70, 229, .34) !important;
+  }
+
+  .ev-icon-danger:hover {
+    transform: translateY(-2px) scale(1.06);
+    box-shadow:
+      0 0 0 5px rgba(254, 202, 202, .45),
+      0 0 22px rgba(239, 68, 68, .24) !important;
+  }
+
+  .ev-card-glow {
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease !important;
+  }
+
+  .ev-card-glow:hover {
+    transform: translateY(-8px);
+    box-shadow:
+      0 0 0 1px rgba(125, 211, 252, .22),
+      0 0 34px rgba(79, 70, 229, .18),
+      0 24px 60px rgba(15, 23, 42, .18) !important;
+  }
+
+  .ev-table-shell table tr {
+    transition: background-color .18s ease, box-shadow .18s ease;
+  }
+
+  .ev-table-shell table tr:hover td {
+    background: rgba(224, 231, 255, .45);
+  }
+</style>
 <app-menu></app-menu>
 <router-outlet></router-outlet>
