@@ -29,6 +29,7 @@ export const routes: Routes = [
 
   { path: 'energia/meta', component: RegistroMeta },
   { path: 'energia/dashboard', component: DashboardAhorro },
+  { path: 'reporte/consumo', component: DashboardAhorro },
 
   { path: 'planes', redirectTo: '', pathMatch: 'full' },
   { path: '**', redirectTo: '', pathMatch: 'full' }
