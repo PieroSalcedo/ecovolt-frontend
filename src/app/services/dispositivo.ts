@@ -16,6 +16,11 @@ export class DispositivoService {
     return this.http.post<ApiResponseDto<Dispositivo>>(baseUrl, obj);
   }
 
+  listarMisDispositivos(): Observable<ApiResponseDto<Dispositivo[]>> {
+    // URL limpia sin parámetros extra
+    return this.http.get<ApiResponseDto<Dispositivo[]>>(`${baseUrl}/mis-dispositivos`);
+  }
+
   consultaDinamica(idHome: number, idRoom: number, name: string): Observable<ApiResponseDto<Dispositivo[]>> {
     const params = new HttpParams()
       .set('idHome', idHome.toString())

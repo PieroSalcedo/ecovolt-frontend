@@ -1,0 +1,32 @@
+<div class="container mt-4">
+  <mat-toolbar color="warn"><span>📡 Simulador de Sensores IoT</span></mat-toolbar>
+  <div class="card mt-3 shadow border-0">
+    <div class="card-body p-4 text-center">
+      <p>Usa este formulario para simular que un dispositivo está consumiendo energía en tiempo real.</p>
+      
+      <form [formGroup]="forms" (ngSubmit)="enviarTelemetria()">
+        <div class="row justify-content-center">
+          <mat-form-field appearance="outline" class="col-md-5">
+            <mat-label>Seleccionar Dispositivo</mat-label>
+            <mat-select formControlName="idDevice">
+              <mat-option *ngFor="let d of dispositivos" [value]="d.idDevice">
+                {{d.name}} ({{d.roomName}})
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Consumo (Watts)</mat-label>
+            <input matInput type="number" formControlName="wattage" step="0.1">
+          </mat-form-field>
+
+          <div class="col-md-3">
+            <button mat-raised-button color="warn" class="w-100 p-4" [disabled]="forms.invalid">
+              ENVIAR PULSO
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
