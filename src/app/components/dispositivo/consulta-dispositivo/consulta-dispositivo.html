@@ -1,27 +1,85 @@
-<div class="container mt-4">
-  <div class="row mb-3 align-items-center p-3 border rounded bg-light mx-1 shadow-sm">
-    <div class="col-md-3">
-      <input class="form-control" placeholder="Nombre..." [(ngModel)]="filtroNombre">
+<div class="container mt-4 mb-5">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-3">
+    <div>
+      <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem; letter-spacing: .04em;">Inventario IoT</span>
+      <h3 class="font-weight-bold mb-0" style="color: #0f172a;">Dispositivos conectados</h3>
     </div>
-    <div class="col-md-3">
-      <select class="form-control" [(ngModel)]="filtroHome" (change)="onHomeFilterChange(filtroHome)">
+    <span class="badge px-3 py-2 mt-3 mt-md-0 shadow-sm" style="color: #312e81; background: linear-gradient(90deg, #e0e7ff, #ecfeff); border-radius: 999px;">Hardware monitoreado</span>
+  </div>
+
+  <div class="row mb-3 align-items-center p-3 border bg-white shadow-sm mx-1" style="border-radius: 14px; border-color: rgba(99,102,241,.18) !important;">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <input class="form-control" placeholder="Nombre..." [(ngModel)]="filtroNombre" style="border-radius: 8px;">
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+      <select class="form-control" [(ngModel)]="filtroHome" (change)="onHomeFilterChange(filtroHome)" style="border-radius: 8px;">
         <option [value]="-1">-- Todas las Viviendas --</option>
         <option *ngFor="let v of viviendas" [value]="v.idHome">{{ v.alias }}</option>
       </select>
     </div>
-    <div class="col-md-3">
-      <select class="form-control" [(ngModel)]="filtroRoom" [disabled]="filtroHome === -1">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <select class="form-control" [(ngModel)]="filtroRoom" [disabled]="filtroHome === -1" style="border-radius: 8px;">
         <option [value]="-1">-- Todas las Habitaciones --</option>
         <option *ngFor="let c of cuartos" [value]="c.idRoom">{{ c.name }}</option>
       </select>
     </div>
     <div class="col-md-3">
-      <button class="btn btn-primary w-100" (click)="consultar()">BUSCAR</button>
+      <button class="ev-glow-btn btn btn-primary w-100 font-weight-bold" style="background: linear-gradient(90deg, #4f46e5, #0891b2); border: 0; color: #fff; border-radius: 10px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" (click)="consultar()">BUSCAR</button>
     </div>
   </div>
 
-  <div class="mat-elevation-z2">
-    <table mat-table [dataSource]="dataSource" class="w-100">
+  <div *ngIf="dispositivoActualiza" class="card shadow-sm border-0 mb-3" style="border-radius: 14px; overflow: hidden;">
+    <div class="card-header text-white d-flex justify-content-between align-items-center p-3" style="background: linear-gradient(90deg, #0f172a, #4f46e5);">
+      <h5 class="mb-0 font-weight-bold"><mat-icon style="vertical-align: middle;">edit</mat-icon> Actualizar dispositivo</h5>
+      <button mat-icon-button class="ev-icon-danger" type="button" (click)="cancelarActualizacion()" style="background: rgba(255,255,255,.12); color: #fff;">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <div class="card-body p-4">
+      <div class="alert mb-3" style="border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;">
+        <small class="text-muted d-block font-weight-bold">Serial / MAC no editable</small>
+        <code>{{ dispositivoActualiza.serialNumber || 'Sin serial' }}</code>
+      </div>
+
+      <div class="row">
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Nombre</mat-label>
+          <input matInput [(ngModel)]="dispositivoActualiza.name">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Marca / fabricante</mat-label>
+          <input matInput [(ngModel)]="dispositivoActualiza.brand">
+        </mat-form-field>
+      </div>
+
+      <div class="row align-items-start">
+        <mat-form-field appearance="outline" class="col-md-5">
+          <mat-label>Habitacion</mat-label>
+          <mat-select [(ngModel)]="dispositivoActualiza.idRoom">
+            <mat-option [value]="-1">-- Seleccione --</mat-option>
+            <mat-option *ngFor="let h of habitacionesActualiza" [value]="h.idRoom">
+              {{ h.name }} - {{ h.homeAddress || 'Vivienda' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-5">
+          <mat-label>Categoria</mat-label>
+          <mat-select [(ngModel)]="dispositivoActualiza.idCategory">
+            <mat-option [value]="-1">-- Seleccione --</mat-option>
+            <mat-option *ngFor="let c of categorias" [value]="c.idDataCatalog">{{ c.value }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="col-md-2 d-flex justify-content-end mt-2">
+          <button mat-raised-button color="primary" class="ev-glow-btn w-100 font-weight-bold p-4" style="background-color: #4f46e5; color: #fff; border-radius: 8px;" (click)="guardarActualizacion()">
+            GUARDAR
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ev-table-shell mat-elevation-z2 bg-white border shadow-sm" style="border-radius: 14px; overflow: hidden; border-color: rgba(99,102,241,.18) !important;">
+    <table mat-table [dataSource]="dataSource" class="w-100 table-hover">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef> ID </th>
         <td mat-cell *matCellDef="let x"> {{x.idDevice}} </td>
@@ -36,16 +94,30 @@
       </ng-container>
       <ng-container matColumnDef="marca">
         <th mat-header-cell *matHeaderCellDef> Marca </th>
-        <td mat-cell *matCellDef="let x"> {{x.brand}} </td>
+        <td mat-cell *matCellDef="let x">
+          <img *ngIf="x.brand?.toLowerCase().includes('xia')"
+               src="https://placehold.co/118x38/ff6900/ffffff?text=Xiaomi"
+               alt="Xiaomi"
+               class="shadow-sm"
+               style="height: 34px; width: 108px; object-fit: cover; border-radius: 9px;">
+          <img *ngIf="!x.brand?.toLowerCase().includes('xia')"
+               src="https://placehold.co/168x38/4f46e5/ffffff?text=Ecovolt+Hardware"
+               alt="Ecovolt Hardware"
+               class="shadow-sm"
+               style="height: 34px; width: 150px; object-fit: cover; border-radius: 9px;">
+        </td>
       </ng-container>
       <ng-container matColumnDef="ambiente">
-        <th mat-header-cell *matHeaderCellDef> Habitación </th>
-        <td mat-cell *matCellDef="let x"> <span class="badge bg-secondary p-2">{{x.roomName}}</span> </td>
+        <th mat-header-cell *matHeaderCellDef> Habitacion </th>
+        <td mat-cell *matCellDef="let x">
+          <span class="badge p-2 shadow-sm" style="color: #312e81; background: linear-gradient(90deg, #e0e7ff, #cffafe); border-radius: 999px; transition: all .2s ease;">{{x.roomName}}</span>
+        </td>
       </ng-container>
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef> Acciones </th>
         <td mat-cell *matCellDef="let x">
-          <button mat-icon-button color="warn" (click)="eliminar(x.idDevice, x.name)"><mat-icon>delete</mat-icon></button>
+          <button mat-icon-button color="primary" class="ev-icon-action" (click)="actualizar(x)" style="background: #e0e7ff; color: #4f46e5; margin-right: 6px; transition: transform .18s ease, box-shadow .18s ease;" title="Editar dispositivo"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button color="warn" class="ev-icon-danger" (click)="eliminar(x.idDevice, x.name)" style="background: #fff1f1;" title="Eliminar dispositivo"><mat-icon>delete</mat-icon></button>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -26,4 +26,8 @@ export class ViviendaService {
   elimina(id: number): Observable<ApiResponseDto<any>> {
     return this.http.delete<ApiResponseDto<any>>(`${baseUrl}/elimina/${id}`);
   }
+
+  actualiza(id: number, obj: Vivienda): Observable<ApiResponseDto<Vivienda>> {
+    return this.http.put<ApiResponseDto<Vivienda>>(`${baseUrl}/${id}`, obj);
+  }
 }

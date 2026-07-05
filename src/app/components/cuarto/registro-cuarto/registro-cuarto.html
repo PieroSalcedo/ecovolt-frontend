@@ -1,7 +1,7 @@
-<div class="container mt-4">
-  <div class="card shadow-sm border-0" style="border-radius: 15px;">
-    <div class="card-header bg-primary text-white p-3">
-      <h5 class="m-0"><mat-icon style="vertical-align: middle;">meeting_room</mat-icon> Registrar Nuevo Ambiente</h5>
+<div class="container mt-4 mb-5">
+  <div class="card shadow-sm border-0" style="border-radius: 8px; overflow: hidden;">
+    <div class="card-header text-white p-3" style="background: linear-gradient(90deg, #0f172a, #4f46e5);">
+      <h5 class="m-0 font-weight-bold"><mat-icon style="vertical-align: middle;">meeting_room</mat-icon> Registrar Nuevo Ambiente</h5>
     </div>
     <div class="card-body p-4">
       <form [formGroup]="forms" (ngSubmit)="registrar()">
@@ -13,7 +13,7 @@
           </mat-form-field>
           
           <mat-form-field appearance="outline" class="col-md-6">
-            <mat-label>Orientación (Ej: Norte / Vista a la calle)</mat-label>
+            <mat-label>Orientaci&oacute;n (Ej: Norte / Vista a la calle)</mat-label>
             <input matInput formControlName="orientation">
           </mat-form-field>
         </div>
@@ -51,7 +51,7 @@
         </div>
 
         <div class="text-center mt-3">
-          <button mat-raised-button color="primary" class="w-50" style="height: 50px; border-radius: 25px;" [disabled]="forms.invalid">
+          <button mat-raised-button color="primary" class="ev-glow-btn w-50 font-weight-bold" style="height: 50px; border-radius: 8px; background-color: #4f46e5; color: #fff; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" [disabled]="forms.invalid">
             <mat-icon>add_circle</mat-icon> GUARDAR AMBIENTE
           </button>
         </div>

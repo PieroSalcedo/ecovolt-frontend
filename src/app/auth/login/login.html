@@ -1,26 +1,39 @@
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-  <mat-card class="p-4" style="width: 400px; border-top: 5px solid #2d6a4f;">
-    <mat-card-header class="justify-content-center">
-      <mat-card-title><h2 style="color: #1b4332;">Bienvenido a Ecovolt</h2></mat-card-title>
-    </mat-card-header>
-    
-    <form (ngSubmit)="onLogin()" #f="ngForm" novalidate>
-      <mat-form-field appearance="outline" class="w-100 mt-3">
-        <mat-label>Usuario</mat-label>
-        <input matInput name="login" [(ngModel)]="loginUsuario.login" required>
-        <mat-icon matSuffix>person</mat-icon>
-      </mat-form-field>
+<div class="container py-5">
+  <div class="row align-items-center justify-content-center" style="min-height: 78vh;">
+    <div class="col-lg-7 mb-4 mb-lg-0">
+      <div class="text-white shadow" style="min-height: 420px; display: flex; flex-direction: column; justify-content: center; padding: 2rem; border-radius: 8px; background: linear-gradient(90deg, rgba(15,63,45,.94), rgba(15,63,45,.66)), url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1400&q=80') center/cover;">
+        <span class="badge badge-light align-self-start px-3 py-2 mb-3" style="color: #0f172a; border-radius: 8px;">Ecovolt Home</span>
+        <h1 class="font-weight-bold mb-3" style="max-width: 520px; font-size: 3.2rem; line-height: 1; letter-spacing: 0;">Tu energia bajo control.</h1>
+        <p class="lead mb-0" style="max-width: 540px; color: rgba(255,255,255,.86);">Accede a tus viviendas, ambientes y dispositivos conectados desde una consola clara y segura.</p>
+      </div>
+    </div>
 
-      <mat-form-field appearance="outline" class="w-100 mt-2">
-        <mat-label>Contraseña</mat-label>
-        <input matInput type="password" name="password" [(ngModel)]="loginUsuario.password" required>
-        <mat-icon matSuffix>lock</mat-icon>
-      </mat-form-field>
+    <div class="col-lg-5 col-md-8">
+      <mat-card class="p-4 shadow border-0" style="border-radius: 8px; border-top: 5px solid #4f46e5;">
+        <mat-card-header class="justify-content-center text-center">
+          <mat-card-title>
+            <h2 class="font-weight-bold mb-0" style="color: #0f172a;">Iniciar sesi&oacute;n</h2>
+          </mat-card-title>
+        </mat-card-header>
 
-      <button mat-raised-button color="primary" class="w-100 mt-3 py-2" 
-              style="background-color: #2d6a4f;" [disabled]="!f.valid">
-        INGRESAR
-      </button>
-    </form>
-  </mat-card>
+        <form (ngSubmit)="onLogin()" #f="ngForm" novalidate>
+          <mat-form-field appearance="outline" class="w-100 mt-3">
+            <mat-label>Usuario</mat-label>
+            <input matInput name="login" [(ngModel)]="loginUsuario.login" required>
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="w-100 mt-2">
+            <mat-label>Contrase&ntilde;a</mat-label>
+            <input matInput type="password" name="password" [(ngModel)]="loginUsuario.password" required>
+            <mat-icon matSuffix>lock</mat-icon>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" class="ev-glow-btn w-100 mt-3 py-2 font-weight-bold" style="background-color: #4f46e5; color: #fff; border-radius: 8px; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" [disabled]="!f.valid">
+            Ingresar
+          </button>
+        </form>
+      </mat-card>
+    </div>
+  </div>
 </div>

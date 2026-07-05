@@ -1,36 +1,50 @@
-<div class="hero-section">
-    <div class="container">
-        <h1>Impulsa tu Eficiencia Energética</h1>
-        <p class="lead">Elige el plan que mejor se adapte a tu hogar inteligente.</p>
-    </div>
+<div class="hero-section text-left position-relative overflow-hidden" style="min-height: 440px; display: flex; align-items: center; padding-top: 48px; background: radial-gradient(circle at 18% 18%, rgba(103,232,249,.32), transparent 34%), radial-gradient(circle at 82% 20%, rgba(251,191,36,.26), transparent 30%), linear-gradient(110deg, rgba(15,23,42,.96), rgba(49,46,129,.86)), url('https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1800&q=80') center/cover;">
+  <div style="position: absolute; right: 7%; bottom: -42px; width: 280px; height: 280px; border-radius: 50%; border: 1px solid rgba(125,211,252,.28);"></div>
+  <div style="position: absolute; right: 12%; bottom: 30px; width: 150px; height: 150px; border-radius: 50%; border: 1px solid rgba(251,191,36,.28);"></div>
+  <div class="container">
+    <span class="badge px-3 py-2 mb-3 shadow-sm" style="color: #0f172a; background: linear-gradient(135deg, #67e8f9, #fde68a); border-radius: 999px;">Gestion inteligente de energia</span>
+    <h1 class="font-weight-bold mb-3" style="max-width: 820px; font-size: 4rem; line-height: 1; letter-spacing: 0; color: #f8fafc;">Controla tu consumo, escala tus dispositivos y decide mejor.</h1>
+    <p class="lead mb-0" style="max-width: 640px; color: rgba(226,232,240,.9);">Planes para hogares conectados con monitoreo claro, inventario IoT y una experiencia visual mas dinamica.</p>
+  </div>
 </div>
 
-<div class="container mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4 mt-4" *ngFor="let plan of planes">
-            <mat-card class="plan-card h-100 shadow-sm border-0">
-                <mat-card-header class="d-block text-center pt-4">
-                    <mat-card-title class="h3">{{plan.name}}</mat-card-title>
-                    <div class="price-tag my-3">S/ {{plan.monthlyPrice}}</div>
-                    <p class="text-muted">{{plan.billingCycle}}</p>
-                </mat-card-header>
-                
-                <mat-card-content class="text-center px-4">
-                    <p class="mb-4">{{plan.description}}</p>
-                    <div class="d-flex align-items-center justify-content-center mb-3">
-                        <mat-icon style="color: #52b788;">devices</mat-icon>
-                        <span class="ml-2">Hasta <b>{{plan.deviceLimit}}</b> dispositivos</span>
-                    </div>
-                </mat-card-content>
-
-                <mat-card-actions class="justify-content-center pb-4">
-                    <button mat-flat-button color="primary" 
-                            style="background-color: #52b788; border-radius: 20px;"
-                            (click)="verDetalle(plan)">
-                        VER DETALLES
-                    </button>
-                </mat-card-actions>
-            </mat-card>
-        </div>
+<div class="container mb-5" style="margin-top: 40px;">
+  <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between bg-white border shadow p-4 mb-3" style="border-radius: 14px; border-color: rgba(99,102,241,.18) !important;">
+    <div>
+      <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem;">Catalogo</span>
+      <h2 class="font-weight-bold mb-0" style="color: #0f172a;">Planes Ecovolt</h2>
     </div>
+    <span class="badge mt-3 mt-md-0 px-3 py-2 d-inline-flex align-items-center shadow-sm" style="color: #312e81; background: #e0e7ff; border-radius: 999px;">
+      <mat-icon class="mr-1" style="font-size: 18px; color: #f59e0b;">bolt</mat-icon> IoT listo
+    </span>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 mt-4" *ngFor="let plan of planes">
+      <mat-card class="plan-card ev-card-glow h-100 shadow border-0" style="border-radius: 16px; background: linear-gradient(180deg, #ffffff, #f8fafc); transition: transform .25s ease, box-shadow .25s ease;">
+        <mat-card-header class="d-block pt-4 px-4">
+          <div class="d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 48px; height: 48px; color: #0f172a; background: linear-gradient(135deg, #67e8f9, #fde68a); border-radius: 14px;">
+            <mat-icon>energy_savings_leaf</mat-icon>
+          </div>
+          <mat-card-title class="h3 font-weight-bold mb-1" style="color: #0f172a;">{{plan.name}}</mat-card-title>
+          <p class="text-muted mb-0">{{plan.billingCycle}}</p>
+        </mat-card-header>
+
+        <mat-card-content class="px-4">
+          <div class="price-tag my-3" style="color: #4f46e5;"><span class="h6 text-muted">S/</span> {{plan.monthlyPrice}}</div>
+          <p class="text-muted mb-4" style="min-height: 72px;">{{plan.description}}</p>
+          <div class="d-flex align-items-center p-3 border shadow-sm" style="color: #312e81; background: linear-gradient(90deg, #eef2ff, #ecfeff); border-radius: 12px; border-color: #c7d2fe !important;">
+            <mat-icon class="mr-2" style="color: #0891b2;">devices</mat-icon>
+            <span>Hasta <b>{{plan.deviceLimit}}</b> dispositivos</span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="px-4 pb-4">
+          <button mat-flat-button color="primary" class="ev-glow-btn w-100 font-weight-bold" style="background: linear-gradient(90deg, #4f46e5, #0891b2); color: #fff; border-radius: 12px; box-shadow: 0 12px 26px rgba(79,70,229,.24); transition: all .2s ease;" (click)="verDetalle(plan)">
+            Ver detalles
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
 </div>

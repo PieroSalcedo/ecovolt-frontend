@@ -32,7 +32,7 @@ export class PlanCatalogComponent implements OnInit {
 
   verDetalle(plan: Plan) {
     Swal.fire({
-      title: `<span style="color: #2d6a4f">${plan.name}</span>`,
+      title: `<span style="color: #4f46e5">${plan.name}</span>`,
       html: `
         <div class="text-left">
           <p><b>Costo:</b> S/ ${plan.monthlyPrice}</p>
@@ -43,7 +43,8 @@ export class PlanCatalogComponent implements OnInit {
         </div>
       `,
       confirmButtonText: 'Entendido',
-      confirmButtonColor: '#52b788',
+      confirmButtonColor: '#4f46e5',
+      iconColor: '#0891b2',
       icon: 'info'
     });
   }

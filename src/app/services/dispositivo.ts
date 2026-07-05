@@ -28,4 +28,8 @@ export class DispositivoService {
   elimina(id: number): Observable<ApiResponseDto<void>> {
     return this.http.delete<ApiResponseDto<void>>(`${baseUrl}/${id}`);
   }
+
+  actualiza(id: number, obj: Dispositivo): Observable<ApiResponseDto<Dispositivo>> {
+    return this.http.put<ApiResponseDto<Dispositivo>>(`${baseUrl}/${id}`, obj);
+  }
 }

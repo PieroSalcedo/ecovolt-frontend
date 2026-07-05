@@ -28,4 +28,8 @@ export class CuartoService {
   elimina(id: number): Observable<ApiResponseDto<void>> {
     return this.http.delete<ApiResponseDto<void>>(`${baseUrl}/${id}`);
   }
+
+  actualiza(id: number, obj: Cuarto): Observable<ApiResponseDto<Cuarto>> {
+    return this.http.put<ApiResponseDto<Cuarto>>(`${baseUrl}/${id}`, obj);
+  }
 }
