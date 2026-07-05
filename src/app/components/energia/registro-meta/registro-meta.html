@@ -1,0 +1,49 @@
+<div class="container mt-4">
+    <mat-toolbar color="primary">
+        <span><mat-icon class="mr-2">track_changes</mat-icon> Establecer Meta de Ahorro</span>
+    </mat-toolbar>
+
+    <div class="card mt-3 shadow-sm border-0">
+        <div class="card-body p-4">
+            <p class="text-muted">Define un límite de consumo mensual (kWh) y un umbral de alerta para tu vivienda.</p>
+            
+            <form [formGroup]="forms" (ngSubmit)="registrar()">
+                <div class="row align-items-center">
+                    
+                    <!-- Selector de Vivienda -->
+                    <mat-form-field appearance="outline" class="col-md-4">
+                        <mat-label>Seleccionar Vivienda</mat-label>
+                        <mat-select formControlName="idHome">
+                            <mat-option *ngFor="let v of viviendas" [value]="v.idHome">
+                                {{ v.alias }} ({{ v.city }})
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="forms.get('idHome')?.hasError('min')">Debe elegir una casa</mat-error>
+                    </mat-form-field>
+
+                    <!-- Valor de la Meta (targetValue mapea a monthlyLimitKwh) -->
+                    <mat-form-field appearance="outline" class="col-md-3">
+                        <mat-label>Límite Mensual (kWh)</mat-label>
+                        <input matInput type="number" formControlName="targetValue" placeholder="Ej: 150">
+                        <mat-icon matSuffix>bolt</mat-icon>
+                    </mat-form-field>
+
+                    <!-- Umbral de Alerta -->
+                    <mat-form-field appearance="outline" class="col-md-3">
+                        <mat-label>% Umbral de Alerta</mat-label>
+                        <input matInput type="number" formControlName="alertThresholdPercentage" placeholder="80">
+                        <span matSuffix>%</span>
+                    </mat-form-field>
+
+                    <!-- Botón Enviar -->
+                    <div class="col-md-2">
+                        <button mat-raised-button color="accent" class="w-100" style="height: 55px;" [disabled]="forms.invalid">
+                            GUARDAR
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

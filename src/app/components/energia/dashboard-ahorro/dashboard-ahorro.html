@@ -1,0 +1,81 @@
+<div class="container mt-4 mb-5">
+  
+  <!-- CABECERA PRINCIPAL -->
+  <div class="p-5 mb-4 bg-dark text-white rounded-3 shadow">
+    <div class="container-fluid py-2">
+      <h1 class="display-5 fw-bold">
+        <mat-icon style="font-size: 40px; height: 40px; width: 40px; vertical-align: bottom;">dashboard</mat-icon> 
+        Monitor Real Ecovolt
+      </h1>
+      <p class="col-md-8 fs-4 text-secondary">Controla tu consumo de energía frente a tu presupuesto mensual.</p>
+      
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <label class="text-white-50">Selecciona una propiedad para analizar:</label>
+          <select class="form-control form-control-lg bg-light" [(ngModel)]="casaSel" (change)="actualizarDatos()">
+            <option [value]="-1">-- Elige una de tus viviendas --</option>
+            <option *ngFor="let c of misCasas" [value]="c.idHome">
+              {{ c.alias }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DE RESULTADOS (Solo si hay meta) -->
+  <div class="row justify-content-center animate__animated animate__fadeIn" *ngIf="meta">
+    <div class="col-md-10">
+      <div class="card shadow-lg border-0 text-center p-5" style="border-radius: 30px;">
+        
+        <h5 class="text-uppercase text-muted mb-4" style="letter-spacing: 2px;">Consumo Acumulado del Mes</h5>
+        
+        <!-- VALOR GRANDE EN KWH -->
+        <h1 class="display-1 fw-bold mb-0" 
+            [ngClass]="porcentaje >= meta.alertThresholdPercentage ? 'text-danger' : 'text-success'">
+          {{ consumoActual.toFixed(2) }} 
+          <small class="text-muted" style="font-size: 0.4em;">kWh</small>
+        </h1>
+        
+        <p class="lead mb-5">Tu meta establecida es de <strong>{{ meta.targetValue }} kWh</strong></p>
+
+        <!-- BARRA DE PROGRESO DINÁMICA -->
+        <div class="progress mb-4" style="height: 60px; border-radius: 15px; background-color: #f1f1f1;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" 
+               role="progressbar" 
+               [style.width.%]="porcentaje > 100 ? 100 : porcentaje"
+               [ngClass]="{
+                  'bg-success': porcentaje < 50, 
+                  'bg-warning': porcentaje >= 50 && porcentaje < meta.alertThresholdPercentage, 
+                  'bg-danger': porcentaje >= meta.alertThresholdPercentage
+               }">
+            <span class="h4 m-0 fw-bold">{{ porcentaje.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- MENSAJE DE ESTADO -->
+        <div class="alert shadow-sm" 
+             [ngClass]="porcentaje >= meta.alertThresholdPercentage ? 'alert-danger' : 'alert-success'" 
+             style="border-radius: 15px;">
+          <mat-icon style="vertical-align: middle;">
+            {{ porcentaje >= meta.alertThresholdPercentage ? 'warning' : 'check_circle' }}
+          </mat-icon>
+          <span class="ml-2 fw-bold">
+            {{ porcentaje >= meta.alertThresholdPercentage ? 
+               '¡Atención! Has superado el umbral de alerta configurado.' : 
+               '¡Excelente! Tu consumo está bajo control.' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MENSAJE INFORMATIVO SI NO HAY META -->
+  <div class="text-center mt-5 p-5 text-muted" *ngIf="!meta && casaSel != -1">
+    <mat-icon style="font-size: 60px; height: 60px; width: 60px;">sentiment_dissatisfied</mat-icon>
+    <h3>No hay metas configuradas</h3>
+    <p>Ve a <b>Registros > Establecer Meta</b> para empezar a monitorear esta casa.</p>
+  </div>
+
+</div>
