@@ -1,17 +1,24 @@
 <div class="hero-section position-relative overflow-hidden"
-     style="background: radial-gradient(circle at 18% 20%, rgba(34,211,238,.25), transparent 32%), radial-gradient(circle at 82% 30%, rgba(251,191,36,.20), transparent 28%), linear-gradient(135deg, #111827 0%, #312e81 52%, #0e7490 100%); padding: 76px 0 132px; margin-bottom: 0; color: white;">
+     style="background: radial-gradient(circle at 18% 20%, rgba(34,211,238,.25), transparent 32%), radial-gradient(circle at 82% 30%, rgba(251,191,36,.20), transparent 28%), linear-gradient(135deg, #111827 0%, #312e81 52%, #0e7490 100%); padding: 86px 0 142px; margin-bottom: 0; color: white;">
   <div class="container text-center position-relative">
     <span class="badge badge-light px-3 py-2 mb-3 shadow-sm" style="border-radius: 999px;">
       <mat-icon style="font-size: 16px; vertical-align: middle;">bolt</mat-icon>
-      Gestion inteligente de energia
+      EcoVolt Smart Home
     </span>
-    <h1 class="display-4 fw-bold mb-3">Llega mas lejos, {{ tokenService.getUserName() }}</h1>
-    <p class="lead mb-0">Controla tus espacios, dispositivos y consumo desde una sola vista.</p>
+    
+    <!-- SALUDO DINÁMICO -->
+    <h1 class="display-4 fw-bold mb-3" *ngIf="isLogged">Llega mas lejos, {{ tokenService.getUserName() }}</h1>
+    <h1 class="display-4 fw-bold mb-3" *ngIf="!isLogged">Llega mas lejos con EcoVolt</h1>
+    
+    <p class="lead mb-0" *ngIf="isLogged">Controla tus espacios, dispositivos y consumo desde una sola vista.</p>
+    <p class="lead mb-0" *ngIf="!isLogged">La plataforma inteligente para gestionar tu energía y ahorrar en cada ambiente.</p>
   </div>
 </div>
 
 <div class="container mb-5">
-  <div class="row justify-content-center" style="margin-top: -72px;">
+  
+  <!-- CONTADORES: SOLO VISIBLES SI EL USUARIO ESTÁ LOGUEADO -->
+  <div class="row justify-content-center" style="margin-top: -72px;" *ngIf="isLogged">
     <div class="col-md-4 mb-3">
       <div class="card border-0 shadow-lg h-100" style="border-radius: 18px; background: linear-gradient(135deg, #ffffff, #eef2ff);">
         <div class="card-body d-flex align-items-center p-4">
@@ -19,7 +26,7 @@
             <mat-icon>home</mat-icon>
           </span>
           <div>
-            <small class="text-uppercase text-muted font-weight-bold">Viviendas registradas</small>
+            <small class="text-uppercase text-muted font-weight-bold">Viviendas</small>
             <h2 class="mb-0 font-weight-bold">{{ totalViviendas }}</h2>
           </div>
         </div>
@@ -33,7 +40,7 @@
             <mat-icon>meeting_room</mat-icon>
           </span>
           <div>
-            <small class="text-uppercase text-muted font-weight-bold">Cuartos registrados</small>
+            <small class="text-uppercase text-muted font-weight-bold">Ambientes</small>
             <h2 class="mb-0 font-weight-bold">{{ totalCuartos }}</h2>
           </div>
         </div>
@@ -47,7 +54,7 @@
             <mat-icon>devices</mat-icon>
           </span>
           <div>
-            <small class="text-uppercase text-muted font-weight-bold">Dispositivos registrados</small>
+            <small class="text-uppercase text-muted font-weight-bold">Dispositivos</small>
             <h2 class="mb-0 font-weight-bold">{{ totalDispositivos }}</h2>
           </div>
         </div>
@@ -55,22 +62,26 @@
     </div>
   </div>
 
-  <div *ngIf="showPlanes" class="mt-5">
+  <!-- SECCIÓN DE PLANES: DINÁMICA -->
+  <div *ngIf="showPlanes" class="mt-5 animate__animated animate__fadeIn">
     <div class="d-flex justify-content-between align-items-center mb-2">
       <div>
-        <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem;">Catalogo</span>
-        <h2 class="font-weight-bold mb-0">Planes Ecovolt</h2>
+        <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem;">Suscripciones</span>
+        <h2 class="font-weight-bold mb-0">Nuestros Planes</h2>
       </div>
       <span class="badge badge-light px-3 py-2 shadow-sm" style="border-radius: 999px;">
         <mat-icon style="font-size: 16px; vertical-align: middle; color: #f59e0b;">bolt</mat-icon>
-        IoT listo
+        IoT Ready
       </span>
     </div>
 
     <div class="row justify-content-center">
       <div class="col-md-4 mt-4" *ngFor="let p of planes">
-        <mat-card class="plan-card h-100 shadow border-0" [style.border-top]="p.idPlan === idPlanActual ? '5px solid #fbbf24' : 'none'">
-          <div *ngIf="p.idPlan === idPlanActual" class="bg-warning text-dark text-center small fw-bold py-1">
+        <mat-card class="plan-card h-100 shadow border-0" 
+                  [style.border-top]="(isLogged && p.idPlan === idPlanActual) ? '5px solid #fbbf24' : 'none'">
+          
+          <!-- Badge de Plan Actual solo si está logueado -->
+          <div *ngIf="isLogged && p.idPlan === idPlanActual" class="bg-warning text-dark text-center small fw-bold py-1">
             TU PLAN ACTUAL
           </div>
 
@@ -80,20 +91,26 @@
           </mat-card-header>
 
           <mat-card-content class="text-center px-4">
-            <p>{{p.description}}</p>
+            <p class="text-muted">{{p.description}}</p>
             <div class="d-flex align-items-center justify-content-center mb-3 p-3" style="border-radius: 12px; background: #f8fafc;">
               <mat-icon color="primary">bolt</mat-icon>
-              <span class="ml-2">Limite: <b>{{p.deviceLimit}}</b> dispositivos</span>
+              <span class="ml-2">Limite: <b>{{p.deviceLimit}}</b> equipos</span>
             </div>
           </mat-card-content>
 
           <mat-card-actions class="justify-content-center pb-4">
+            <!-- BOTÓN CON TEXTO DINÁMICO -->
             <button mat-raised-button
-                    [disabled]="p.idPlan === idPlanActual"
-                    [color]="p.idPlan === idPlanActual ? '' : 'primary'"
-                    style="border-radius: 999px; padding: 10px 40px; box-shadow: 0 12px 24px rgba(79,70,229,.22);"
+                    class="ev-glow-btn"
+                    [disabled]="isLogged && p.idPlan === idPlanActual"
+                    [color]="(isLogged && p.idPlan === idPlanActual) ? '' : 'primary'"
+                    style="border-radius: 999px; padding: 12px 35px; font-weight: 600;"
                     (click)="ejecutarAccion(p.idPlan)">
-              {{ p.idPlan === idPlanActual ? 'PLAN ACTIVO' : 'MEJORAR AHORA' }}
+              
+              <span *ngIf="!isLogged">REGISTRARME CON ESTE PLAN</span>
+              <span *ngIf="isLogged && p.idPlan === idPlanActual">PLAN ACTIVO</span>
+              <span *ngIf="isLogged && p.idPlan !== idPlanActual">MEJORAR AHORA</span>
+
             </button>
           </mat-card-actions>
         </mat-card>
