@@ -46,6 +46,7 @@ export class PlanCatalogComponent implements OnInit {
       },
       error: (err) => console.error("Error cargando planes", err)
     });
+
   }
 
   ejecutarAccion(idPlan: number) {

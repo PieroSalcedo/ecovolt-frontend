@@ -1,118 +1,298 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
-
+import { MatIconModule } from '@angular/material/icon';
+import { CuartoService } from '../../../services/cuarto';
 import { ReadingService } from '../../../services/reading';
 import { ViviendaService } from '../../../services/vivienda';
-import { CuartoService } from '../../../services/cuarto';
-
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatCardModule } from '@angular/material/card';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIcon } from "@angular/material/icon";
 
 @Component({
-  selector: 'app-reporte-consumo',
-  standalone: true,
-  imports: [CommonModule, FormsModule, NgChartsModule, MatToolbarModule, MatCardModule, MatSelectModule, MatFormFieldModule, MatIcon],
-  templateUrl: './reporte-consumo.html',
-  styleUrls: ['./reporte-consumo.css']
+    selector: 'app-reporte-consumo',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        NgChartsModule,
+        MatIconModule
+    ],
+    templateUrl: './reporte-consumo.html',
+    styleUrls: ['./reporte-consumo.css']
 })
-export class ReporteConsumo implements OnInit {
-  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
+export class ReporteConsumo implements OnInit, AfterViewInit {
 
-  // Variables de control
-  nivel: string = 'VIVIENDA'; // 'VIVIENDA', 'CUARTO', 'DISPOSITIVO'
-  misCasas: any[] = [];
-  misCuartos: any[] = [];
-  idHomeSel: number = -1;
-  idRoomSel: number = -1;
+    @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
-  // Configuración Única del Gráfico
-  public mainChartData: ChartConfiguration<'bar'>['data'] = {
-    labels: [],
-    datasets: [{ data: [], label: 'Consumo (Watts)', backgroundColor: '#2d6a4f', borderRadius: 5 }]
-  };
+    misCasas: any[] = [];
+    misCuartos: any[] = [];
+    casaSel: number = -1;
+    cuartoSel: number = -1;
 
-  public mainChartOptions: ChartOptions<'bar'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } }
-  };
+    hasCasaData: boolean = false;
+    hasCuartoData: boolean = false;
+    hasDispositivoData: boolean = false;
+    totalCasas: number = 0;
+    totalCuartos: number = 0;
+    totalDispositivos: number = 0;
 
-  constructor(
-    private rService: ReadingService, 
-    private vService: ViviendaService,
-    private cService: CuartoService,
-    private cd: ChangeDetectorRef
-  ) {}
+    constructor(
+        private vService: ViviendaService,
+        private cService: CuartoService,
+        private rService: ReadingService,
+        private cd: ChangeDetectorRef
+    ) {}
 
-  ngOnInit() {
-    this.vService.consultaDinamica("", "", -1).subscribe(res => this.misCasas = res.data || []);
-    this.cargarReporteCasas(); // Por defecto al cargar
-  }
-
-  // Lógica de cambio de nivel
-  cambiarNivel() {
-    this.idHomeSel = -1;
-    this.idRoomSel = -1;
-    this.misCuartos = [];
-    
-    if (this.nivel === 'VIVIENDA') {
-      this.cargarReporteCasas();
-    } else {
-      // Limpiar gráfico hasta que seleccionen una casa/cuarto
-      this.actualizarGrafico([], [], 'Seleccione un origen');
+    ngOnInit() {
+        this.cargarViviendas();
+        this.cargarCasas();
     }
-  }
 
-  cargarReporteCasas() {
-    this.rService.reporteCasas().subscribe(data => {
-      this.actualizarGrafico(
-        data.map(x => x.casa),
-        data.map(x => x.consumo),
-        'Consumo por Vivienda'
-      );
-    });
-  }
+    ngAfterViewInit() {
+        setTimeout(() => {
+            this.updateCharts();
+        }, 500);
 
-  onCasaChange() {
-    if (this.idHomeSel === -1) return;
-
-    // Cargar Cuartos para el combo si el nivel es DISPOSITIVO
-    this.cService.consultaDinamica("", this.idHomeSel, -1).subscribe(res => this.misCuartos = res.data || []);
-
-    if (this.nivel === 'CUARTO') {
-      this.rService.reporteCuartos(this.idHomeSel).subscribe(data => {
-        this.actualizarGrafico(
-          data.map(x => x.cuarto),
-          data.map(x => x.consumo),
-          'Distribución por Cuartos'
-        );
-      });
+        window.addEventListener('resize', () => {
+            this.updateCharts();
+        });
     }
-  }
 
-  onRoomChange() {
-    if (this.idRoomSel === -1) return;
-    this.rService.reporteDispositivos(this.idRoomSel).subscribe(data => {
-      this.actualizarGrafico(
-        data.map(x => x.dispositivo),
-        data.map(x => x.consumo),
-        'Consumo por Dispositivo'
-      );
-    });
-  }
+    updateCharts() {
+        if (this.charts) {
+            this.charts.forEach(chart => {
+                if (chart && chart.chart) {
+                    chart.chart.update();
+                }
+            });
+        }
+    }
 
-  // Método central para refrescar el canvas
-  actualizarGrafico(labels: string[], data: number[], label: string) {
-    this.mainChartData.labels = labels;
-    this.mainChartData.datasets[0].data = data;
-    this.mainChartData.datasets[0].label = label;
-    this.chart?.update();
-    this.cd.detectChanges();
-  }
+    barCasaData: ChartConfiguration<'bar'>['data'] = {
+        labels: [],
+        datasets: [{
+            data: [],
+            label: 'Consumo por Vivienda',
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    barOptions: ChartOptions<'bar'> = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { size: 13 }
+                }
+            },
+            title: {
+                display: true,
+                text: 'Consumo por Vivienda',
+                font: { size: 16, weight: 'bold' }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    };
+
+    pieCuartoData: ChartConfiguration<'pie'>['data'] = {
+        labels: [],
+        datasets: [{
+            data: [],
+            label: 'Consumo por Cuarto',
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(255, 205, 86, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+                'rgba(54, 162, 235, 0.8)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 205, 86, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 2
+        }]
+    };
+
+    pieOptions: ChartOptions<'pie'> = {
+        responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 1,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { size: 13 }
+                }
+            },
+            title: {
+                display: true,
+                text: 'Distribucion por Cuarto',
+                font: { size: 16, weight: 'bold' }
+            }
+        }
+    };
+
+    barDispositivoData: ChartConfiguration<'bar'>['data'] = {
+        labels: [],
+        datasets: [{
+            data: [],
+            label: 'Consumo por Dispositivo',
+            backgroundColor: 'rgba(153, 102, 255, 0.7)',
+            borderColor: 'rgba(153, 102, 255, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    horizontalBarOptions: ChartOptions<'bar'> = {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { size: 13 }
+                }
+            },
+            title: {
+                display: true,
+                text: 'Consumo por Dispositivo',
+                font: { size: 16, weight: 'bold' }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true
+            }
+        }
+    };
+
+    cargarViviendas() {
+        this.vService.consultaDinamica('', '', -1).subscribe({
+            next: (data) => {
+                this.misCasas = data.data || [];
+                if (this.misCasas.length > 0 && this.casaSel === -1) {
+                    this.casaSel = Number(this.misCasas[0].idHome);
+                    this.cargarCuartos();
+                }
+                this.cd.detectChanges();
+            },
+            error: (error) => {
+                console.error('Error al cargar viviendas:', error);
+            }
+        });
+    }
+
+    cargarCasas() {
+        this.rService.reporteCasas().subscribe({
+            next: (data) => {
+                if (data && data.length > 0) {
+                    this.barCasaData.labels = data.map(item => item.casa || 'Vivienda');
+                    this.barCasaData.datasets[0].data = data.map(item => Number(item.consumo || 0));
+                    this.totalCasas = data.reduce((total, item) => total + Number(item.consumo || 0), 0);
+                    this.hasCasaData = true;
+                }
+                this.cd.detectChanges();
+                setTimeout(() => this.updateCharts(), 100);
+            },
+            error: (error) => {
+                console.error('Error al cargar datos por vivienda:', error);
+            }
+        });
+    }
+
+    cargarCuartos() {
+        this.limpiarCuartos();
+        this.limpiarDispositivos();
+
+        if (this.casaSel === -1) {
+            return;
+        }
+
+        this.cService.consultaDinamica('', this.casaSel, -1).subscribe({
+            next: (data) => {
+                this.misCuartos = data.data || [];
+                if (this.misCuartos.length > 0) {
+                    this.cuartoSel = Number(this.misCuartos[0].idRoom);
+                    this.cargarDispositivos();
+                }
+                this.cd.detectChanges();
+            },
+            error: (error) => {
+                console.error('Error al cargar cuartos:', error);
+            }
+        });
+
+        this.rService.reporteCuartos(this.casaSel).subscribe({
+            next: (data) => {
+                if (data && data.length > 0) {
+                    this.pieCuartoData.labels = data.map(item => item.cuarto || 'Cuarto');
+                    this.pieCuartoData.datasets[0].data = data.map(item => Number(item.consumo || 0));
+                    this.totalCuartos = data.reduce((total, item) => total + Number(item.consumo || 0), 0);
+                    this.hasCuartoData = true;
+                }
+                this.cd.detectChanges();
+                setTimeout(() => this.updateCharts(), 100);
+            },
+            error: (error) => {
+                console.error('Error al cargar datos por cuarto:', error);
+            }
+        });
+    }
+
+    cargarDispositivos() {
+        this.limpiarDispositivos();
+
+        if (this.cuartoSel === -1) {
+            return;
+        }
+
+        this.rService.reporteDispositivos(this.cuartoSel).subscribe({
+            next: (data) => {
+                if (data && data.length > 0) {
+                    this.barDispositivoData.labels = data.map(item => item.dispositivo || 'Dispositivo');
+                    this.barDispositivoData.datasets[0].data = data.map(item => Number(item.consumo || 0));
+                    this.totalDispositivos = data.reduce((total, item) => total + Number(item.consumo || 0), 0);
+                    this.hasDispositivoData = true;
+                }
+                this.cd.detectChanges();
+                setTimeout(() => this.updateCharts(), 100);
+            },
+            error: (error) => {
+                console.error('Error al cargar datos por dispositivo:', error);
+            }
+        });
+    }
+
+    limpiarCuartos() {
+        this.misCuartos = [];
+        this.cuartoSel = -1;
+        this.hasCuartoData = false;
+        this.totalCuartos = 0;
+        this.pieCuartoData.labels = [];
+        this.pieCuartoData.datasets[0].data = [];
+        this.cd.detectChanges();
+        setTimeout(() => this.updateCharts(), 100);
+    }
+
+    limpiarDispositivos() {
+        this.hasDispositivoData = false;
+        this.totalDispositivos = 0;
+        this.barDispositivoData.labels = [];
+        this.barDispositivoData.datasets[0].data = [];
+        this.cd.detectChanges();
+        setTimeout(() => this.updateCharts(), 100);
+    }
 }

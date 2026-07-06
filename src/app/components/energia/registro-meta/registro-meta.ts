@@ -22,24 +22,23 @@ import { ActivatedRoute } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, 
+    MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatToolbarModule, MatIconModule
   ],
   templateUrl: './registro-meta.html'
 })
 export class RegistroMeta implements OnInit {
-  
+
   forms: FormGroup;
-  nivelMeta: string = 'CASA'; 
-  
-  // Listas Dinámicas
+  nivelMeta: string = 'CASA';
+
   misCasas: any[] = [];
   misCuartos: any[] = [];
   misDispositivos: any[] = [];
 
-  // IDs auxiliares para la cascada (fuera del form)
   idHomeAux: number = -1;
   idRoomAux: number = -1;
+  idDeviceAux: number = -1;
 
   constructor(
     private fb: FormBuilder,
@@ -51,8 +50,8 @@ export class RegistroMeta implements OnInit {
     private route: ActivatedRoute
   ) {
     this.forms = this.fb.group({
-      targetValue: [0, [Validators.required, Validators.min(0.1)]],
-      alertThresholdPercentage: [80, [Validators.required]],
+      targetValue: [90, [Validators.required, Validators.min(0.1)]],
+      alertThresholdPercentage: [80, [Validators.required, Validators.min(1), Validators.max(100)]],
       idHome: [null],
       idRoom: [null],
       idDevice: [null]
@@ -60,107 +59,110 @@ export class RegistroMeta implements OnInit {
   }
 
   ngOnInit() {
-    // 1. Cargar todas las listas iniciales (como ya hacías)
-    this.vService.consultaDinamica("", "", -1).subscribe(res => {
-        this.misCasas = res.data || [];
-        
-        // 2. DESPUÉS de cargar las casas, miramos si venimos del Monitor
-        this.route.queryParams.subscribe(params => {
-            if (params['nivel']) {
-                this.nivelMeta = params['nivel'];
-                this.idHomeAux = Number(params['home']);
-                
-                // Disparamos la cascada manualmente
-                this.onCasaChange(); 
+    this.vService.consultaDinamica('', '', -1).subscribe(res => {
+      this.misCasas = res.data || [];
 
-                // Si venía un cuarto
-                if (params['room'] && params['room'] != -1) {
-                    setTimeout(() => { // Pequeño delay para que el combo de cuartos se llene
-                        this.idRoomAux = Number(params['room']);
-                        this.onRoomChange();
-                        
-                        // Si venía un dispositivo
-                        if (params['device'] && params['device'] != -1) {
-                            setTimeout(() => {
-                                const idDev = Number(params['device']);
-                                this.onDeviceChange(idDev);
-                                this.cd.detectChanges();
-                            }, 500);
-                        }
-                    }, 500);
-                }
-            }
-        });
+      this.route.queryParams.subscribe(params => {
+        if (params['nivel']) {
+          this.nivelMeta = params['nivel'];
+          this.idHomeAux = Number(params['home']);
+          this.onCasaChange();
+
+          if (params['room'] && params['room'] != -1) {
+            setTimeout(() => {
+              this.idRoomAux = Number(params['room']);
+              this.onRoomChange();
+
+              if (params['device'] && params['device'] != -1) {
+                setTimeout(() => {
+                  this.onDeviceChange(Number(params['device']));
+                  this.cd.detectChanges();
+                }, 300);
+              }
+            }, 300);
+          }
+        }
+      });
     });
-    // Cargar lo demás...
-    this.cService.consultaDinamica("", -1, -1).subscribe(res => this.misCuartos = res.data || []);
-    this.dService.listarMisDispositivos().subscribe(res => this.misDispositivos = res.data || []);
   }
 
-  // Al cambiar el nivel (CASA, CUARTO, DISPOSITIVO)
   cambioNivel() {
     this.idHomeAux = -1;
     this.idRoomAux = -1;
+    this.idDeviceAux = -1;
     this.misCuartos = [];
     this.misDispositivos = [];
     this.forms.patchValue({ idHome: null, idRoom: null, idDevice: null });
   }
 
-  // Al elegir Casa -> Cargamos sus Cuartos
   onCasaChange() {
     this.idRoomAux = -1;
+    this.idDeviceAux = -1;
+    this.misCuartos = [];
     this.misDispositivos = [];
-    this.forms.patchValue({ idRoom: null, idDevice: null });
+    this.forms.patchValue({ idHome: null, idRoom: null, idDevice: null });
 
     if (this.idHomeAux != -1) {
-      // Si el nivel es CASA, asignamos el ID al formulario
-      if (this.nivelMeta === 'CASA') {
-          this.forms.patchValue({ idHome: this.idHomeAux });
-      }
-      
-      // Cargamos cuartos de esa casa
-      this.cService.consultaDinamica("", this.idHomeAux, -1).subscribe(res => {
+      this.forms.patchValue({ idHome: Number(this.idHomeAux) });
+
+      this.cService.consultaDinamica('', this.idHomeAux, -1).subscribe(res => {
         this.misCuartos = res.data || [];
         this.cd.detectChanges();
       });
     }
   }
 
-  // Al elegir Cuarto -> Cargamos sus Dispositivos
   onRoomChange() {
+    this.idDeviceAux = -1;
+    this.misDispositivos = [];
     this.forms.patchValue({ idDevice: null });
 
     if (this.idRoomAux != -1) {
-      // Si el nivel es CUARTO, asignamos el ID al formulario
       if (this.nivelMeta === 'CUARTO') {
-          this.forms.patchValue({ idRoom: this.idRoomAux });
+        this.forms.patchValue({ idRoom: Number(this.idRoomAux) });
       }
 
-      // Cargamos dispositivos de ese cuarto
-      this.dService.consultaDinamica(this.idHomeAux, this.idRoomAux, "").subscribe(res => {
+      this.dService.consultaDinamica(this.idHomeAux, this.idRoomAux, '').subscribe(res => {
         this.misDispositivos = res.data || [];
         this.cd.detectChanges();
       });
     }
   }
 
-  // Al elegir Dispositivo
   onDeviceChange(idDev: number) {
+    this.idDeviceAux = Number(idDev);
     if (this.nivelMeta === 'DISPOSITIVO') {
-        this.forms.patchValue({ idDevice: idDev });
+      this.forms.patchValue({ idDevice: Number(idDev), idRoom: Number(this.idRoomAux) });
     }
   }
 
   registrar() {
-    if (this.forms.invalid) return;
+    if (this.nivelMeta === 'CASA') {
+      this.forms.patchValue({ idHome: Number(this.idHomeAux), idRoom: null, idDevice: null });
+    } else if (this.nivelMeta === 'CUARTO') {
+      this.forms.patchValue({ idHome: Number(this.idHomeAux), idRoom: Number(this.idRoomAux), idDevice: null });
+    } else {
+      this.forms.patchValue({ idHome: Number(this.idHomeAux), idRoom: Number(this.idRoomAux), idDevice: Number(this.idDeviceAux) });
+    }
+
+    if (
+      this.forms.invalid ||
+      this.idHomeAux < 1 ||
+      (this.nivelMeta !== 'CASA' && this.idRoomAux < 1) ||
+      (this.nivelMeta === 'DISPOSITIVO' && this.idDeviceAux < 1)
+    ) {
+      this.forms.markAllAsTouched();
+      Swal.fire('Datos no validos', 'Selecciona el nivel completo y verifica limite mensual y umbral.', 'warning');
+      return;
+    }
 
     this.gService.registrar(this.forms.value).subscribe({
-      next: (res) => {
-        Swal.fire("Éxito", "Meta de ahorro establecida", "success");
-        this.forms.reset({ targetValue: 0, alertThresholdPercentage: 80 });
+      next: () => {
+        Swal.fire('Exito', 'Meta de ahorro establecida', 'success');
+        this.forms.reset({ targetValue: 90, alertThresholdPercentage: 80 });
         this.cambioNivel();
       },
-      error: () => Swal.fire("Error", "No se pudo guardar la meta", "error")
+      error: (err) => Swal.fire('Error', err.error?.message || 'No se pudo guardar la meta', 'error')
     });
   }
 }

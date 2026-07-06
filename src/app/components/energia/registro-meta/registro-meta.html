@@ -1,89 +1,90 @@
 <div class="container mt-4 mb-5">
-    <mat-toolbar color="primary" class="rounded shadow-sm">
-        <span><mat-icon class="mr-2">track_changes</mat-icon> Configurar Límite de Consumo</span>
-    </mat-toolbar>
-
-    <div class="card mt-3 shadow border-0" style="border-radius: 15px;">
-        <div class="card-body p-4">
-            
-            <!-- PASO 1: SELECCIONAR NIVEL -->
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <label class="font-weight-bold text-primary">1. Nivel de Control:</label>
-                    <select class="form-control" [(ngModel)]="nivelMeta" (change)="cambioNivel()">
-                        <option value="CASA">Toda la Vivienda</option>
-                        <option value="CUARTO">Un Ambiente (Cuarto)</option>
-                        <option value="DISPOSITIVO">Un Dispositivo IoT</option>
-                    </select>
-                </div>
-                <div class="col-md-8 d-flex align-items-center">
-                    <p class="text-muted m-0 small italic">
-                        <mat-icon style="font-size: 16px; vertical-align: middle;">help_outline</mat-icon>
-                        Elige qué quieres delimitar para recibir alertas de sobreconsumo.
-                    </p>
-                </div>
-            </div>
-
-            <hr>
-
-            <!-- PASO 2: SELECCIÓN EN CASCADA -->
-            <div class="row mt-4">
-                
-                <!-- Siempre elegir Casa primero (Base de la jerarquía) -->
-                <div class="col-md-4">
-                    <label class="small font-weight-bold">Paso A: Elegir Vivienda</label>
-                    <select class="form-control" [(ngModel)]="idHomeAux" (change)="onCasaChange()">
-                        <option [value]="-1">-- Selecciona Casa --</option>
-                        <option *ngFor="let v of misCasas" [value]="v.idHome">{{ v.alias }}</option>
-                    </select>
-                </div>
-
-                <!-- Si el nivel es CUARTO o DISPOSITIVO, mostrar selector de Cuartos -->
-                <div class="col-md-4" *ngIf="nivelMeta !== 'CASA'">
-                    <label class="small font-weight-bold">Paso B: Elegir Ambiente</label>
-                    <select class="form-control" [(ngModel)]="idRoomAux" (change)="onRoomChange()" [disabled]="idHomeAux == -1">
-                        <option [value]="-1">-- Selecciona Cuarto --</option>
-                        <option *ngFor="let r of misCuartos" [value]="r.idRoom">{{ r.name }}</option>
-                    </select>
-                </div>
-
-                <!-- Si el nivel es DISPOSITIVO, mostrar selector de Equipos -->
-                <div class="col-md-4" *ngIf="nivelMeta === 'DISPOSITIVO'">
-                    <label class="small font-weight-bold">Paso C: Elegir Dispositivo</label>
-                    <select class="form-control" (change)="onDeviceChange(idDev.value)" #idDev [disabled]="idRoomAux == -1">
-                        <option [value]="-1">-- Selecciona Equipo --</option>
-                        <option *ngFor="let d of misDispositivos" [value]="d.idDevice">{{ d.name }}</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- PASO 3: VALORES DE LA META -->
-            <form [formGroup]="forms" (ngSubmit)="registrar()" class="mt-5 p-4 bg-light rounded border">
-                <div class="row align-items-center">
-                    <div class="col-md-4">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Límite Mensual (kWh)</mat-label>
-                            <input matInput type="number" formControlName="targetValue" placeholder="Ej: 100">
-                            <mat-icon matSuffix>bolt</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-md-4">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>% Umbral de Alerta</mat-label>
-                            <input matInput type="number" formControlName="alertThresholdPercentage">
-                            <span matSuffix>%</span>
-                        </mat-form-field>
-                    </div>
-                    <div class="col-md-4">
-                        <!-- El botón se habilita solo si el ID correspondiente al nivel está seteado -->
-                        <button mat-raised-button color="accent" class="w-100" style="height: 55px;" 
-                                [disabled]="forms.invalid">
-                            <mat-icon>save</mat-icon> ESTABLECER META
-                        </button>
-                    </div>
-                </div>
-            </form>
-
+  <div class="card border-0 shadow-lg overflow-hidden" style="border-radius: 18px;">
+    <div class="p-4 text-white" style="background: radial-gradient(circle at 15% 20%, rgba(34,211,238,.35), transparent 30%), linear-gradient(135deg, #111827, #4f46e5 58%, #0e7490);">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <span class="badge badge-light px-3 py-2 mb-3" style="border-radius: 999px;">
+            <mat-icon style="font-size: 16px; vertical-align: middle;">track_changes</mat-icon>
+            Control energetico
+          </span>
+          <h2 class="font-weight-bold mb-2">Configurar limite de consumo</h2>
+          <p class="mb-0 text-white-50">Define metas por vivienda, ambiente o dispositivo para activar alertas de sobreconsumo.</p>
         </div>
+        <div class="col-md-4 mt-4 mt-md-0">
+          <div class="p-3 bg-white text-dark shadow-sm" style="border-radius: 16px;">
+            <label class="small font-weight-bold text-uppercase text-muted">Nivel de control</label>
+            <select class="form-control border-0 bg-light" [(ngModel)]="nivelMeta" (change)="cambioNivel()">
+              <option value="CASA">Toda la Vivienda</option>
+              <option value="CUARTO">Un Ambiente (Cuarto)</option>
+              <option value="DISPOSITIVO">Un Dispositivo IoT</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="card-body p-4 p-md-5">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <div class="p-3 h-100 border shadow-sm" style="border-radius: 14px; background: #f8fafc;">
+            <span class="badge badge-primary mb-2">Paso A</span>
+            <label class="d-block font-weight-bold">Elegir vivienda</label>
+            <select class="form-control" [(ngModel)]="idHomeAux" (change)="onCasaChange()">
+              <option [ngValue]="-1">-- Selecciona Casa --</option>
+              <option *ngFor="let v of misCasas" [ngValue]="v.idHome">{{ v.alias }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-3" *ngIf="nivelMeta !== 'CASA'">
+          <div class="p-3 h-100 border shadow-sm" style="border-radius: 14px; background: #f8fafc;">
+            <span class="badge badge-info mb-2">Paso B</span>
+            <label class="d-block font-weight-bold">Elegir ambiente</label>
+            <select class="form-control" [(ngModel)]="idRoomAux" (change)="onRoomChange()" [disabled]="idHomeAux == -1">
+              <option [ngValue]="-1">-- Selecciona Cuarto --</option>
+              <option *ngFor="let r of misCuartos" [ngValue]="r.idRoom">{{ r.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-3" *ngIf="nivelMeta === 'DISPOSITIVO'">
+          <div class="p-3 h-100 border shadow-sm" style="border-radius: 14px; background: #f8fafc;">
+            <span class="badge badge-warning mb-2">Paso C</span>
+            <label class="d-block font-weight-bold">Elegir dispositivo</label>
+            <select class="form-control" [(ngModel)]="idDeviceAux" (change)="onDeviceChange(idDeviceAux)" [disabled]="idRoomAux == -1">
+              <option [ngValue]="-1">-- Selecciona Equipo --</option>
+              <option *ngFor="let d of misDispositivos" [ngValue]="d.idDevice">{{ d.name }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="forms" (ngSubmit)="registrar()" class="mt-4 p-4 border shadow-sm" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff, #f8fafc);">
+        <div class="row align-items-center">
+          <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>Limite mensual (kWh)</mat-label>
+              <input matInput type="number" formControlName="targetValue" placeholder="Ej: 90">
+              <mat-icon matSuffix>bolt</mat-icon>
+              <mat-error *ngIf="forms.get('targetValue')?.invalid">Ingresa un limite mayor a 0.</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>% Umbral de alerta</mat-label>
+              <input matInput type="number" formControlName="alertThresholdPercentage">
+              <span matSuffix>%</span>
+              <mat-error *ngIf="forms.get('alertThresholdPercentage')?.invalid">Debe estar entre 1 y 100.</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <button mat-raised-button color="primary" class="w-100 font-weight-bold text-white" style="height: 56px; border-radius: 999px; background: linear-gradient(135deg, #4f46e5, #0e7490); box-shadow: 0 14px 30px rgba(79,70,229,.28);">
+              <mat-icon>save</mat-icon>
+              ESTABLECER META
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

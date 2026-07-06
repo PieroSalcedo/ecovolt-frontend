@@ -1,61 +1,113 @@
 <div class="container mt-4 mb-5">
-  <div class="card shadow-sm border-0" style="border-radius: 8px; overflow: hidden;">
-    <div class="card-header text-white p-3" style="background: linear-gradient(90deg, #0f172a, #4f46e5);">
-      <h5 class="m-0 font-weight-bold"><mat-icon style="vertical-align: middle;">meeting_room</mat-icon> Registrar Nuevo Ambiente</h5>
+  <div class="p-4 mb-4 text-white shadow-lg" style="border-radius: 18px; background: radial-gradient(circle at 15% 20%, rgba(34,211,238,.32), transparent 30%), linear-gradient(135deg, #111827, #4f46e5 58%, #0e7490);">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <span class="badge badge-light px-3 py-2 mb-3" style="border-radius: 999px;">Catalogo de ambientes</span>
+        <h3 class="font-weight-bold mb-2">Elige un tipo de cuarto para registrar</h3>
+        <p class="mb-0 text-white-50">Selecciona una plantilla visual y completa los datos en el formulario emergente.</p>
+      </div>
+      <div class="col-md-4 text-md-right mt-3 mt-md-0">
+        <span class="badge badge-light border px-3 py-2 shadow-sm" style="border-radius: 999px;">
+          <mat-icon style="font-size: 17px; vertical-align: middle;">touch_app</mat-icon>
+          Registro guiado
+        </span>
+      </div>
     </div>
-    <div class="card-body p-4">
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6 col-lg-4 mb-4" *ngFor="let p of plantillas">
+      <div class="card border-0 shadow-lg h-100" style="border-radius: 18px; overflow: hidden; background: #ffffff;">
+        <div style="height: 170px; overflow: hidden;">
+          <img [src]="p.imagen" [alt]="p.nombre" class="w-100 h-100" style="object-fit: cover;">
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="font-weight-bold mb-0">{{ p.nombre }}</h5>
+            <span class="badge badge-primary">{{ p.tipo }}</span>
+          </div>
+          <p class="text-muted small mb-3">{{ p.area }} m2 sugeridos - Piso {{ p.piso }} - {{ p.orientacion }}</p>
+          <button mat-raised-button color="primary" class="w-100 font-weight-bold text-white" style="height: 44px; border-radius: 999px; background: linear-gradient(135deg, #4f46e5, #0e7490); box-shadow: 0 12px 24px rgba(79,70,229,.22);" (click)="seleccionarPlantilla(p)">
+            <mat-icon>add_home</mat-icon>
+            Registrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="formularioVisible"
+     class="d-flex align-items-center justify-content-center"
+     style="position: fixed; inset: 0; z-index: 1050; background: rgba(15, 23, 42, .62); backdrop-filter: blur(4px); padding: 24px;">
+  <div class="card shadow-lg border-0 overflow-hidden w-100" style="max-width: 980px; border-radius: 18px;">
+    <div class="card-header text-white p-4 border-0" style="background: linear-gradient(135deg, #111827, #4f46e5);">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="m-0 font-weight-bold">
+          <mat-icon style="vertical-align: middle;">meeting_room</mat-icon>
+          Registrar {{ plantillaSeleccionada?.nombre }}
+        </h5>
+        <button type="button" class="btn btn-sm btn-light" style="border-radius: 999px;" (click)="formularioVisible = false">
+          Cerrar
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body p-4 p-md-5">
       <form [formGroup]="forms" (ngSubmit)="registrar()">
-        
         <div class="row">
           <mat-form-field appearance="outline" class="col-md-6">
-            <mat-label>Nombre del Ambiente (Ej: Cocina)</mat-label>
+            <mat-label>Nombre del ambiente</mat-label>
             <input matInput formControlName="name">
+            <mat-error *ngIf="forms.get('name')?.invalid">Solo letras y espacios, minimo 3 caracteres.</mat-error>
           </mat-form-field>
-          
+
           <mat-form-field appearance="outline" class="col-md-6">
-            <mat-label>Orientaci&oacute;n (Ej: Norte / Vista a la calle)</mat-label>
+            <mat-label>Orientacion</mat-label>
             <input matInput formControlName="orientation">
+            <mat-error *ngIf="forms.get('orientation')?.invalid">Solo letras y espacios.</mat-error>
           </mat-form-field>
         </div>
 
-        <div class="row">
+        <div class="row p-3 mx-0 border shadow-sm" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff, #f8fafc);">
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Piso</mat-label>
             <input matInput type="number" formControlName="floorNumber">
+            <mat-error *ngIf="forms.get('floorNumber')?.invalid">Piso no valido.</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
-            <mat-label>Metros Cuadrados (m2)</mat-label>
+            <mat-label>Metros cuadrados (m2)</mat-label>
             <input matInput type="number" formControlName="areaSqm">
+            <mat-error *ngIf="forms.get('areaSqm')?.invalid">El area debe ser mayor a 0.</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
             <mat-label>Vivienda</mat-label>
             <mat-select formControlName="idHome">
               <mat-option [value]="-1">-- Seleccione Casa --</mat-option>
-              <mat-option *ngFor="let v of viviendas" [value]="v.idHome">
-                {{ v.alias }}
-              </mat-option>
+              <mat-option *ngFor="let v of viviendas" [value]="v.idHome">{{ v.alias }}</mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idHome')?.invalid">Selecciona una vivienda.</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="col-md-3">
-            <mat-label>Tipo de Ambiente</mat-label>
+            <mat-label>Tipo de ambiente</mat-label>
             <mat-select formControlName="idRoomType">
               <mat-option [value]="-1">-- Seleccione Tipo --</mat-option>
-              <mat-option *ngFor="let t of tipos" [value]="t.idDataCatalog">
-                {{ t.value }}
-              </mat-option>
+              <mat-option *ngFor="let t of tipos" [value]="t.idDataCatalog">{{ t.value }}</mat-option>
             </mat-select>
+            <mat-error *ngIf="forms.get('idRoomType')?.invalid">Selecciona un tipo.</mat-error>
           </mat-form-field>
         </div>
 
-        <div class="text-center mt-3">
-          <button mat-raised-button color="primary" class="ev-glow-btn w-50 font-weight-bold" style="height: 50px; border-radius: 8px; background-color: #4f46e5; color: #fff; box-shadow: 0 10px 22px rgba(79,70,229,.24); transition: all .2s ease;" [disabled]="forms.invalid">
-            <mat-icon>add_circle</mat-icon> GUARDAR AMBIENTE
+        <div class="text-right mt-4">
+          <button type="button" mat-button class="mr-2" (click)="formularioVisible = false">Cancelar</button>
+          <button mat-raised-button color="primary" class="font-weight-bold text-white px-5" style="height: 52px; border-radius: 999px; background: linear-gradient(135deg, #4f46e5, #0e7490); box-shadow: 0 14px 30px rgba(79,70,229,.28);">
+            <mat-icon>add_circle</mat-icon>
+            GUARDAR AMBIENTE
           </button>
         </div>
-
       </form>
     </div>
   </div>

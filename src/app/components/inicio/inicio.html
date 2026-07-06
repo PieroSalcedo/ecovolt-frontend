@@ -1,0 +1,103 @@
+<div class="hero-section position-relative overflow-hidden"
+     style="background: radial-gradient(circle at 18% 20%, rgba(34,211,238,.25), transparent 32%), radial-gradient(circle at 82% 30%, rgba(251,191,36,.20), transparent 28%), linear-gradient(135deg, #111827 0%, #312e81 52%, #0e7490 100%); padding: 76px 0 132px; margin-bottom: 0; color: white;">
+  <div class="container text-center position-relative">
+    <span class="badge badge-light px-3 py-2 mb-3 shadow-sm" style="border-radius: 999px;">
+      <mat-icon style="font-size: 16px; vertical-align: middle;">bolt</mat-icon>
+      Gestion inteligente de energia
+    </span>
+    <h1 class="display-4 fw-bold mb-3">Llega mas lejos, {{ tokenService.getUserName() }}</h1>
+    <p class="lead mb-0">Controla tus espacios, dispositivos y consumo desde una sola vista.</p>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <div class="row justify-content-center" style="margin-top: -72px;">
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-lg h-100" style="border-radius: 18px; background: linear-gradient(135deg, #ffffff, #eef2ff);">
+        <div class="card-body d-flex align-items-center p-4">
+          <span class="d-flex align-items-center justify-content-center mr-3 shadow-sm" style="width: 58px; height: 58px; border-radius: 16px; color: #fff; background: linear-gradient(135deg, #4f46e5, #0891b2);">
+            <mat-icon>home</mat-icon>
+          </span>
+          <div>
+            <small class="text-uppercase text-muted font-weight-bold">Viviendas registradas</small>
+            <h2 class="mb-0 font-weight-bold">{{ totalViviendas }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-lg h-100" style="border-radius: 18px; background: linear-gradient(135deg, #ffffff, #ecfeff);">
+        <div class="card-body d-flex align-items-center p-4">
+          <span class="d-flex align-items-center justify-content-center mr-3 shadow-sm" style="width: 58px; height: 58px; border-radius: 16px; color: #fff; background: linear-gradient(135deg, #0f766e, #22d3ee);">
+            <mat-icon>meeting_room</mat-icon>
+          </span>
+          <div>
+            <small class="text-uppercase text-muted font-weight-bold">Cuartos registrados</small>
+            <h2 class="mb-0 font-weight-bold">{{ totalCuartos }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-lg h-100" style="border-radius: 18px; background: linear-gradient(135deg, #ffffff, #fff7ed);">
+        <div class="card-body d-flex align-items-center p-4">
+          <span class="d-flex align-items-center justify-content-center mr-3 shadow-sm" style="width: 58px; height: 58px; border-radius: 16px; color: #fff; background: linear-gradient(135deg, #f97316, #facc15);">
+            <mat-icon>devices</mat-icon>
+          </span>
+          <div>
+            <small class="text-uppercase text-muted font-weight-bold">Dispositivos registrados</small>
+            <h2 class="mb-0 font-weight-bold">{{ totalDispositivos }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showPlanes" class="mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div>
+        <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem;">Catalogo</span>
+        <h2 class="font-weight-bold mb-0">Planes Ecovolt</h2>
+      </div>
+      <span class="badge badge-light px-3 py-2 shadow-sm" style="border-radius: 999px;">
+        <mat-icon style="font-size: 16px; vertical-align: middle; color: #f59e0b;">bolt</mat-icon>
+        IoT listo
+      </span>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-4 mt-4" *ngFor="let p of planes">
+        <mat-card class="plan-card h-100 shadow border-0" [style.border-top]="p.idPlan === idPlanActual ? '5px solid #fbbf24' : 'none'">
+          <div *ngIf="p.idPlan === idPlanActual" class="bg-warning text-dark text-center small fw-bold py-1">
+            TU PLAN ACTUAL
+          </div>
+
+          <mat-card-header class="d-block text-center pt-4">
+            <mat-card-title class="h3">{{p.name}}</mat-card-title>
+            <div class="price-tag my-3">S/ {{p.monthlyPrice}}</div>
+          </mat-card-header>
+
+          <mat-card-content class="text-center px-4">
+            <p>{{p.description}}</p>
+            <div class="d-flex align-items-center justify-content-center mb-3 p-3" style="border-radius: 12px; background: #f8fafc;">
+              <mat-icon color="primary">bolt</mat-icon>
+              <span class="ml-2">Limite: <b>{{p.deviceLimit}}</b> dispositivos</span>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions class="justify-content-center pb-4">
+            <button mat-raised-button
+                    [disabled]="p.idPlan === idPlanActual"
+                    [color]="p.idPlan === idPlanActual ? '' : 'primary'"
+                    style="border-radius: 999px; padding: 10px 40px; box-shadow: 0 12px 24px rgba(79,70,229,.22);"
+                    (click)="ejecutarAccion(p.idPlan)">
+              {{ p.idPlan === idPlanActual ? 'PLAN ACTIVO' : 'MEJORAR AHORA' }}
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

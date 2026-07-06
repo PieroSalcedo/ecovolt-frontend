@@ -51,7 +51,7 @@ export class LoginComponent {
           showConfirmButton: false
         }).then(() => {
           // Usamos href para forzar la recarga del menú con los nuevos permisos
-          window.location.href = '/'; 
+          window.location.replace(window.location.origin + '/principal');
         });
       }
     },

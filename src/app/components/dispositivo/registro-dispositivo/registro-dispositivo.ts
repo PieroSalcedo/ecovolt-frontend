@@ -43,9 +43,9 @@ export class RegistroDispositivo implements OnInit {
       idHome: [-1, [Validators.required, Validators.min(1)]],
       // Inicializado como deshabilitado reactivamente para evitar advertencias en el DOM
       idRoom: [{ value: -1, disabled: true }, [Validators.required, Validators.min(1)]],
-      name: ['', Validators.required],
-      serialNumber: ['', Validators.required],
-      brand: ['', Validators.required],
+      name: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 ]{3,60}$/)]],
+      serialNumber: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9:-]{4,40}$/)]],
+      brand: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9 -]{2,60}$/)]],
       idCategory: [-1, [Validators.required, Validators.min(1)]]
     });
   }
@@ -85,7 +85,11 @@ export class RegistroDispositivo implements OnInit {
   }
 
   registrar() {
-    if (this.forms.invalid) return;
+    if (this.forms.invalid) {
+      this.forms.markAllAsTouched();
+      Swal.fire("Datos no validos", "Selecciona vivienda, ambiente y categoria. El nombre, serial y marca deben tener un formato valido.", "warning");
+      return;
+    }
 
     // getRawValue() extrae todos los campos incluso si idRoom está deshabilitado
     this.dService.registra(this.forms.getRawValue()).subscribe({

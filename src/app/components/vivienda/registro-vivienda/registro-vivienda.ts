@@ -33,10 +33,10 @@ export class RegistroVivienda implements OnInit {
 
   constructor(private fb: FormBuilder, private util: UtilService, private vService: ViviendaService, private tokenService: TokenService) {
     this.forms = this.fb.group({
-      alias: ['', Validators.required],
-      city: ['', Validators.required],
-      address: ['', Validators.required],
-      energyTariff: [0, Validators.required],
+      alias: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,50}$/)]],
+      city: ['', [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,50}$/)]],
+      address: ['', [Validators.required, Validators.minLength(5)]],
+      energyTariff: [0, [Validators.required, Validators.min(0.1)]],
       squareMeters: [0, [Validators.required, Validators.min(1)]], // <-- 1. Agregamos el campo al Form
       idPropertyType: [-1, Validators.min(1)]
     });
@@ -47,7 +47,11 @@ export class RegistroVivienda implements OnInit {
   }
 
   registrar() {
-    if (this.forms.invalid) return;
+    if (this.forms.invalid) {
+      this.forms.markAllAsTouched();
+      Swal.fire("Datos no validos", "Revisa los campos: alias y ciudad solo aceptan letras; tarifa y area deben ser mayores a cero.", "warning");
+      return;
+    }
 
     // Creamos el objeto exactamente como lo espera el HomeDto.Request de Java
     const data = {

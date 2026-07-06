@@ -1,77 +1,125 @@
 <div class="container mt-4 mb-5">
-    <!-- Encabezado con Estilo -->
-    <mat-toolbar color="primary" class="rounded shadow mb-4">
-        <span class="d-flex align-items-center">
-            <mat-icon class="mr-2">analytics</mat-icon> 
-            Análisis Energético Inteligente
-        </span>
-    </mat-toolbar>
+  <div class="p-4 mb-4 bg-dark text-white shadow">
+    <div class="row align-items-end">
+      <div class="col-md-7">
+        <h1 class="h2 font-weight-bold mb-2">
+          <mat-icon class="mr-2" style="vertical-align: middle;">insert_chart</mat-icon>
+          Dashboard de Consumo
+        </h1>
+        <p class="text-white-50 mb-0">Reportes graficos generados desde las lecturas IoT registradas.</p>
+      </div>
 
-    <!-- BARRA DE FILTROS DINÁMICA -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
-        <div class="card-body bg-light rounded">
-            <div class="row align-items-center">
-                
-                <!-- 1. Selección de Nivel -->
-                <div class="col-md-3">
-                    <label class="small font-weight-bold text-muted">¿Qué quieres analizar?</label>
-                    <select class="form-control" [(ngModel)]="nivel" (change)="cambiarNivel()">
-                        <option value="VIVIENDA">Todas mis Viviendas</option>
-                        <option value="CUARTO">Ambientes de una Casa</option>
-                        <option value="DISPOSITIVO">Equipos de un Cuarto</option>
-                    </select>
-                </div>
+      <div class="col-md-5 mt-3 mt-md-0">
+        <label class="text-white-50">Vivienda</label>
+        <select class="form-control form-control-lg" [(ngModel)]="casaSel" (change)="cargarCuartos()">
+          <option [ngValue]="-1">-- Seleccione una vivienda --</option>
+          <option *ngFor="let c of misCasas" [ngValue]="c.idHome">{{ c.alias }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
-                <!-- 2. Combo de Casas (Solo si nivel es Cuarto o Dispositivo) -->
-                <div class="col-md-3" *ngIf="nivel !== 'VIVIENDA'">
-                    <label class="small font-weight-bold text-muted">Seleccionar Casa:</label>
-                    <select class="form-control" [(ngModel)]="idHomeSel" (change)="onCasaChange()">
-                        <option [value]="-1">-- Elige Propiedad --</option>
-                        <option *ngFor="let c of misCasas" [value]="c.idHome">{{c.alias}}</option>
-                    </select>
-                </div>
+  <div class="row mb-4">
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <small class="text-muted text-uppercase font-weight-bold">Consumo total</small>
+          <h2 class="font-weight-bold mb-0">{{ totalCasas | number:'1.2-2' }}</h2>
+          <span class="text-muted">kWh registrados</span>
+        </div>
+      </div>
+    </div>
 
-                <!-- 3. Combo de Cuartos (Solo si nivel es Dispositivo) -->
-                <div class="col-md-3" *ngIf="nivel === 'DISPOSITIVO'">
-                    <label class="small font-weight-bold text-muted">Seleccionar Cuarto:</label>
-                    <select class="form-control" [(ngModel)]="idRoomSel" (change)="onRoomChange()" [disabled]="idHomeSel == -1">
-                        <option [value]="-1">-- Elige Ambiente --</option>
-                        <option *ngFor="let r of misCuartos" [value]="r.idRoom">{{r.name}}</option>
-                    </select>
-                </div>
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <small class="text-muted text-uppercase font-weight-bold">Vivienda seleccionada</small>
+          <h2 class="font-weight-bold mb-0">{{ totalCuartos | number:'1.2-2' }}</h2>
+          <span class="text-muted">kWh por ambientes</span>
+        </div>
+      </div>
+    </div>
 
-                <div class="col text-right" *ngIf="nivel === 'VIVIENDA'">
-                    <span class="badge badge-success p-2">Mostrando Resumen Global</span>
-                </div>
+    <div class="col-md-4 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <small class="text-muted text-uppercase font-weight-bold">Cuarto seleccionado</small>
+          <h2 class="font-weight-bold mb-0">{{ totalDispositivos | number:'1.2-2' }}</h2>
+          <span class="text-muted">kWh por dispositivos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-0 pt-4 px-4">
+      <h5 class="font-weight-bold mb-1">Consumo por vivienda</h5>
+      <small class="text-muted">Agrupado por las propiedades del usuario autenticado.</small>
+    </div>
+    <div class="card-body px-4 pb-4">
+      <div class="chart-container" *ngIf="hasCasaData">
+        <canvas baseChart [data]="barCasaData" [options]="barOptions" [type]="'bar'"></canvas>
+      </div>
+      <div class="text-center text-muted p-4" *ngIf="!hasCasaData">
+        No hay lecturas registradas por vivienda.
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-5 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0 pt-4 px-4">
+          <h5 class="font-weight-bold mb-1">Consumo por cuarto</h5>
+          <small class="text-muted">Distribucion de consumo de la vivienda seleccionada.</small>
+        </div>
+        <div class="card-body px-4 pb-4">
+          <div *ngIf="casaSel === -1" class="text-center text-muted py-5">
+            <mat-icon style="font-size: 48px; height: 48px; width: 48px;">home</mat-icon>
+            <p class="mb-0">Seleccione una vivienda para ver este reporte.</p>
+          </div>
+
+          <div class="chart-container-pie" *ngIf="casaSel !== -1 && hasCuartoData">
+            <canvas baseChart [data]="pieCuartoData" [options]="pieOptions" [type]="'pie'"></canvas>
+          </div>
+          <div class="text-center text-muted p-4" *ngIf="casaSel !== -1 && !hasCuartoData">
+            La vivienda seleccionada no tiene lecturas registradas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0 pt-4 px-4">
+          <div class="row align-items-end">
+            <div class="col-md-6">
+              <h5 class="font-weight-bold mb-1">Consumo por dispositivo</h5>
+              <small class="text-muted">Detalle por equipo IoT del cuarto seleccionado.</small>
             </div>
+            <div class="col-md-6 mt-3 mt-md-0">
+              <label class="text-muted mb-1">Cuarto</label>
+              <select class="form-control" [(ngModel)]="cuartoSel" (change)="cargarDispositivos()" [disabled]="misCuartos.length === 0">
+                <option [ngValue]="-1">-- Seleccione --</option>
+                <option *ngFor="let r of misCuartos" [ngValue]="r.idRoom">{{ r.name }}</option>
+              </select>
+            </div>
+          </div>
         </div>
-    </div>
+        <div class="card-body px-4 pb-4">
+          <div *ngIf="cuartoSel === -1" class="text-center text-muted py-5">
+            <mat-icon style="font-size: 48px; height: 48px; width: 48px;">devices</mat-icon>
+            <p class="mb-0">Seleccione un cuarto para ver este reporte.</p>
+          </div>
 
-    <!-- ÁREA DEL GRÁFICO ÚNICO -->
-    <div class="row">
-        <div class="col-12">
-            <mat-card class="border-0 shadow-lg p-4" style="border-radius: 20px; min-height: 500px;">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2 class="m-0 text-dark font-weight-bold">
-                        {{ mainChartData.datasets[0].label }}
-                    </h2>
-                    <mat-icon class="text-secondary">bar_chart</mat-icon>
-                </div>
-
-                <!-- Canvas del gráfico -->
-                <div style="position: relative; height: 400px; width: 100%;">
-                    <canvas baseChart 
-                        [data]="mainChartData" 
-                        [options]="mainChartOptions" 
-                        [type]="'bar'">
-                    </canvas>
-                </div>
-
-                <!-- Mensaje cuando no hay selección -->
-                <div class="text-center mt-4 text-muted" *ngIf="mainChartData.labels?.length === 0">
-                    <p>Por favor, completa los filtros superiores para visualizar los datos.</p>
-                </div>
-            </mat-card>
+          <div class="chart-container" *ngIf="cuartoSel !== -1 && hasDispositivoData">
+            <canvas baseChart [data]="barDispositivoData" [options]="horizontalBarOptions" [type]="'bar'"></canvas>
+          </div>
+          <div class="text-center text-muted p-4" *ngIf="cuartoSel !== -1 && !hasDispositivoData">
+            El cuarto seleccionado no tiene lecturas registradas.
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>

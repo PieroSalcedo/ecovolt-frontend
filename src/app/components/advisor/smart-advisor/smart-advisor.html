@@ -1,0 +1,147 @@
+<div class="container mt-4 mb-5">
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end mb-3">
+    <div>
+      <span class="text-uppercase font-weight-bold" style="color: #4f46e5; font-size: .78rem; letter-spacing: .04em;">Innovacion IA</span>
+      <h3 class="font-weight-bold mb-1" style="color: #0f172a;">EcoVolt Smart Advisor</h3>
+      <p class="mb-0" style="color: #64748b;">Analisis inteligente de consumo, metas y recomendaciones de ahorro.</p>
+    </div>
+    <span class="badge px-3 py-2 mt-3 mt-lg-0 shadow-sm" style="color: #312e81; background: linear-gradient(90deg, #e0e7ff, #ecfeff); border-radius: 999px;">
+      <mat-icon style="font-size: 17px; vertical-align: middle;">auto_awesome</mat-icon>
+      {{ resultado?.aiGenerated ? 'Gemini activo' : 'IA con respaldo local' }}
+    </span>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-lg-8 mb-3 mb-lg-0">
+      <div class="border shadow-sm bg-white h-100" style="border-radius: 16px; overflow: hidden; border-color: rgba(99,102,241,.18) !important;">
+        <div class="p-4 text-white" style="background: radial-gradient(circle at top right, rgba(103,232,249,.35), transparent 32%), linear-gradient(120deg, #0f172a, #312e81 58%, #0891b2);">
+          <span class="badge px-3 py-2 mb-3" style="color: #0f172a; background: #fef3c7; border-radius: 999px;">Asesor energetico</span>
+          <h2 class="font-weight-bold mb-2" style="letter-spacing: 0;">Convierte tus lecturas IoT en decisiones de ahorro.</h2>
+          <p class="mb-0" style="color: #dbeafe;">El backend calcula consumo real, costo estimado y avance de meta; la IA redacta recomendaciones claras para el usuario.</p>
+        </div>
+
+        <div class="p-4">
+          <div class="row align-items-start">
+            <mat-form-field appearance="outline" class="col-md-5">
+              <mat-label>Vivienda</mat-label>
+              <mat-select [(ngModel)]="idHome">
+                <mat-option [value]="-1">-- Seleccione --</mat-option>
+                <mat-option *ngFor="let v of viviendas" [value]="v.idHome">{{ v.alias }} - {{ v.city }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="col-md-4">
+              <mat-label>Periodo</mat-label>
+              <mat-select [(ngModel)]="period">
+                <mat-option *ngFor="let p of periodos" [value]="p.value">{{ p.label }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="col-md-3 mt-2">
+              <button mat-raised-button color="primary" class="ev-glow-btn w-100 font-weight-bold p-4" style="background: linear-gradient(90deg, #4f46e5, #0891b2); color: #fff; border-radius: 10px;" (click)="analizar()" [disabled]="cargando">
+                <mat-icon style="vertical-align: middle;">psychology</mat-icon>
+                ANALIZAR
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="cargando" class="d-flex align-items-center justify-content-center py-4">
+            <mat-spinner diameter="34"></mat-spinner>
+            <span class="ml-3 font-weight-bold" style="color: #475569;">Generando analisis energetico...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="border shadow-sm bg-white h-100 p-4" style="border-radius: 16px; border-color: rgba(99,102,241,.18) !important;">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h5 class="font-weight-bold mb-0" style="color: #0f172a;">Estado</h5>
+          <span class="d-inline-flex align-items-center justify-content-center" [style.background]="getRiskColor()" style="width: 42px; height: 42px; color: #fff; border-radius: 12px;">
+            <mat-icon>bolt</mat-icon>
+          </span>
+        </div>
+        <h3 class="font-weight-bold mb-1" [style.color]="getRiskColor()">{{ resultado ? getRiskLabel() : 'Pendiente' }}</h3>
+        <p class="mb-0" style="color: #64748b;">Selecciona una vivienda y genera el analisis para ver el nivel de riesgo energetico.</p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="resultado" class="mb-4">
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <div class="ev-card-glow border bg-white shadow-sm p-3 h-100" style="border-radius: 14px; border-color: rgba(99,102,241,.18) !important;">
+          <small class="text-uppercase font-weight-bold" style="color: #64748b;">Consumo</small>
+          <h4 class="font-weight-bold mb-0" style="color: #0f172a;">{{ resultado.totalKwh || 0 }} kWh</h4>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="ev-card-glow border bg-white shadow-sm p-3 h-100" style="border-radius: 14px; border-color: rgba(99,102,241,.18) !important;">
+          <small class="text-uppercase font-weight-bold" style="color: #64748b;">Costo estimado</small>
+          <h4 class="font-weight-bold mb-0" style="color: #0f172a;">S/ {{ resultado.estimatedCost || 0 }}</h4>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="ev-card-glow border bg-white shadow-sm p-3 h-100" style="border-radius: 14px; border-color: rgba(99,102,241,.18) !important;">
+          <small class="text-uppercase font-weight-bold" style="color: #64748b;">Meta mensual</small>
+          <h4 class="font-weight-bold mb-0" style="color: #0f172a;">{{ resultado.monthlyGoalKwh || 0 }} kWh</h4>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="ev-card-glow border bg-white shadow-sm p-3 h-100" style="border-radius: 14px; border-color: rgba(99,102,241,.18) !important;">
+          <small class="text-uppercase font-weight-bold" style="color: #64748b;">Ahorro posible</small>
+          <h4 class="font-weight-bold mb-0" style="color: #0f172a;">S/ {{ resultado.estimatedSaving || 0 }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="border bg-white shadow-sm p-4 mb-4" style="border-radius: 16px; border-color: rgba(99,102,241,.18) !important;">
+      <div class="d-flex align-items-start">
+        <span class="d-inline-flex align-items-center justify-content-center mr-3" style="width: 44px; height: 44px; color: #312e81; background: #e0e7ff; border-radius: 12px;">
+          <mat-icon>summarize</mat-icon>
+        </span>
+        <div>
+          <h5 class="font-weight-bold mb-1" style="color: #0f172a;">Resumen del asesor</h5>
+          <p class="mb-0" style="color: #475569;">{{ resultado.summary }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-5 mb-4">
+        <div class="border bg-white shadow-sm h-100" style="border-radius: 16px; overflow: hidden; border-color: rgba(99,102,241,.18) !important;">
+          <div class="p-3 border-bottom" style="background: #f8fafc;">
+            <h5 class="font-weight-bold mb-0" style="color: #0f172a;">Metricas detectadas</h5>
+          </div>
+          <div class="p-3">
+            <div *ngFor="let m of resultado.metrics" class="d-flex justify-content-between align-items-center py-2 border-bottom">
+              <div>
+                <b style="color: #0f172a;">{{ m.label }}</b>
+                <small class="d-block" style="color: #64748b;">{{ m.type }}</small>
+              </div>
+              <span class="badge px-3 py-2" style="color: #312e81; background: #e0e7ff; border-radius: 999px;">{{ m.value }} {{ m.unit }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-7 mb-4">
+        <div class="border bg-white shadow-sm h-100" style="border-radius: 16px; overflow: hidden; border-color: rgba(99,102,241,.18) !important;">
+          <div class="p-3 border-bottom" style="background: #f8fafc;">
+            <h5 class="font-weight-bold mb-0" style="color: #0f172a;">Recomendaciones</h5>
+          </div>
+          <div class="p-3">
+            <div *ngFor="let r of resultado.recommendations" class="ev-card-glow border p-3 mb-3" style="border-radius: 14px; border-color: rgba(99,102,241,.16) !important;">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="font-weight-bold mb-0" style="color: #0f172a;">{{ r.title }}</h6>
+                <span class="badge px-3 py-2" [style.background]="getPriorityColor(r.priority)" style="color: #fff; border-radius: 999px;">{{ r.priority }}</span>
+              </div>
+              <p class="mb-2" style="color: #475569;">{{ r.description }}</p>
+              <small class="font-weight-bold" style="color: #4f46e5;">{{ r.category }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
