@@ -1,1 +1,78 @@
 /* You can add global styles to this file, and also import other style files */
+.ecovolt-switch {
+  position: relative !important;
+  display: inline-block !important;
+  width: 92px !important;
+  height: 44px !important;
+  margin: 0 !important;
+}
+
+.ecovolt-switch-input {
+  display: none !important;
+}
+
+.ecovolt-slider {
+  position: absolute !important;
+  cursor: pointer !important;
+  inset: 0 !important;
+  background: linear-gradient(145deg, #e5e7eb, #f8fafc) !important;
+  border-radius: 999px !important;
+  transition: all 0.3s ease !important;
+  box-shadow:
+    inset 0 2px 6px rgba(15, 23, 42, 0.18),
+    0 6px 14px rgba(15, 23, 42, 0.18) !important;
+  overflow: hidden !important;
+}
+
+.ecovolt-slider::before {
+  content: "" !important;
+  position: absolute !important;
+  width: 36px !important;
+  height: 36px !important;
+  left: 4px !important;
+  top: 4px !important;
+  background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+  box-shadow:
+    0 5px 14px rgba(15, 23, 42, 0.28),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+  z-index: 3 !important;
+}
+
+.ecovolt-switch-input:checked + .ecovolt-slider {
+  background: linear-gradient(145deg, #16a34a, #22c55e) !important;
+}
+
+.ecovolt-switch-input:checked + .ecovolt-slider::before {
+  transform: translateX(48px) !important;
+}
+
+.ecovolt-text {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 0.9rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  user-select: none !important;
+  z-index: 2 !important;
+}
+
+.ecovolt-text-on {
+  left: 14px !important;
+  color: rgba(255, 255, 255, 0) !important;
+}
+
+.ecovolt-text-off {
+  right: 12px !important;
+  color: #9ca3af !important;
+}
+
+.ecovolt-switch-input:checked + .ecovolt-slider .ecovolt-text-on {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ecovolt-switch-input:checked + .ecovolt-slider .ecovolt-text-off {
+  color: rgba(255, 255, 255, 0) !important;
+}

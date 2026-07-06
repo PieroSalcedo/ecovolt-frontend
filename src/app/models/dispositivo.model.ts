@@ -9,4 +9,5 @@ export class Dispositivo {
     idCategory?: number; // <-- AGREGAR
     roomName?: string;
     categoryName?: string; // <-- AGREGAR
+    onOff?: boolean;
 }

@@ -37,4 +37,8 @@ export class DispositivoService {
   actualiza(id: number, obj: Dispositivo): Observable<ApiResponseDto<Dispositivo>> {
     return this.http.put<ApiResponseDto<Dispositivo>>(`${baseUrl}/${id}`, obj);
   }
+
+  cambiarEstado(id: number): Observable<ApiResponseDto<Dispositivo>> {
+    return this.http.put<ApiResponseDto<Dispositivo>>(`${baseUrl}/${id}/cambiar-onoff`, {});
+  }
 }

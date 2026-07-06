@@ -32,7 +32,7 @@ export class ConsultaDispositivo implements OnInit {
   dispositivoActualiza: any = null;
 
   dataSource = new MatTableDataSource<any>([]);
-  displayedColumns = ["id", "serial", "nombre", "marca", "ambiente", "acciones"];
+  displayedColumns = ["id", "serial", "nombre", "marca", "ambiente","estado", "acciones"];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
@@ -144,6 +144,26 @@ export class ConsultaDispositivo implements OnInit {
       error: (err) => {
         Swal.fire('Error', err.error?.message || 'No se pudo actualizar el dispositivo.', 'error');
       }
+    });
+  }
+  cambiarEstado(x: any) {
+  this.dService.cambiarEstado(x.idDevice).subscribe({
+    next: (res) => {
+      if (res.data) {
+        x.isOn = res.data.onOff;
+      }
+
+      Swal.fire({
+        title: 'Estado actualizado',
+        text: res.message,
+        icon: 'success',
+        timer: 1200,
+        showConfirmButton: false
+      });
+    },
+    error: (err) => {
+      Swal.fire('Error', err.error?.message || 'No se pudo cambiar el estado del dispositivo.', 'error');
+     }
     });
   }
 }
